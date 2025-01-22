@@ -1,0 +1,79 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 4816441 */
+  src: url('iconfont.woff2?t=1737524436338') format('woff2'),
+       url('iconfont.woff?t=1737524436338') format('woff'),
+       url('iconfont.ttf?t=1737524436338') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-bangzhu:before {
+  content: "\e621";
+}
+
+.icon-daochu:before {
+  content: "\e61b";
+}
+
+.icon-xiazai:before {
+  content: "\e682";
+}
+
+.icon-a-chexiaozhongzuoshangyibu:before {
+  content: "\e983";
+}
+
+.icon-a-chexiaozhongzuoxiayibu-xianxing:before {
+  content: "\e607";
+}
+
+.icon-caidan:before {
+  content: "\e62c";
+}
+
+.icon-yuanxingweixuanzhong:before {
+  content: "\e72f";
+}
+
+.icon-yuanjiao-rect:before {
+  content: "\e64e";
+}
+
+.icon-24gf-circle:before {
+  content: "\ea9f";
+}
+
+.icon-A:before {
+  content: "\e601";
+}
+
+.icon-juxing:before {
+  content: "\e620";
+}
+
+.icon-huabi:before {
+  content: "\e61f";
+}
+
+.icon-hand-full:before {
+  content: "\e91a";
+}
+
+.icon-hand:before {
+  content: "\e91b";
+}
+
+.icon-chuizhizhixian:before {
+  content: "\e7db";
+}
+
+.icon-arrdown:before {
+  content: "\e731";
+}
+

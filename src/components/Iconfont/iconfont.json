@@ -1,0 +1,121 @@
+{
+  "id": "4816441",
+  "name": "luminous",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1304879",
+      "name": "帮助",
+      "font_class": "bangzhu",
+      "unicode": "e621",
+      "unicode_decimal": 58913
+    },
+    {
+      "icon_id": "1459147",
+      "name": "导出",
+      "font_class": "daochu",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
+      "icon_id": "12184865",
+      "name": "下载",
+      "font_class": "xiazai",
+      "unicode": "e682",
+      "unicode_decimal": 59010
+    },
+    {
+      "icon_id": "38832700",
+      "name": "撤销重做=上一步",
+      "font_class": "a-chexiaozhongzuoshangyibu",
+      "unicode": "e983",
+      "unicode_decimal": 59779
+    },
+    {
+      "icon_id": "41618972",
+      "name": "重做",
+      "font_class": "a-chexiaozhongzuoxiayibu-xianxing",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "1304947",
+      "name": "菜单",
+      "font_class": "caidan",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    },
+    {
+      "icon_id": "577322",
+      "name": "圆形未选中",
+      "font_class": "yuanxingweixuanzhong",
+      "unicode": "e72f",
+      "unicode_decimal": 59183
+    },
+    {
+      "icon_id": "755610",
+      "name": "圆角矩形",
+      "font_class": "yuanjiao-rect",
+      "unicode": "e64e",
+      "unicode_decimal": 58958
+    },
+    {
+      "icon_id": "7594472",
+      "name": "24gf-circle",
+      "font_class": "24gf-circle",
+      "unicode": "ea9f",
+      "unicode_decimal": 60063
+    },
+    {
+      "icon_id": "9866675",
+      "name": "A",
+      "font_class": "A",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "10048835",
+      "name": "矩形",
+      "font_class": "juxing",
+      "unicode": "e620",
+      "unicode_decimal": 58912
+    },
+    {
+      "icon_id": "10398166",
+      "name": "画笔",
+      "font_class": "huabi",
+      "unicode": "e61f",
+      "unicode_decimal": 58911
+    },
+    {
+      "icon_id": "18169503",
+      "name": "手,手掌,巴掌",
+      "font_class": "hand-full",
+      "unicode": "e91a",
+      "unicode_decimal": 59674
+    },
+    {
+      "icon_id": "18169504",
+      "name": "手,手掌,巴掌",
+      "font_class": "hand",
+      "unicode": "e91b",
+      "unicode_decimal": 59675
+    },
+    {
+      "icon_id": "22238111",
+      "name": "垂直直线",
+      "font_class": "chuizhizhixian",
+      "unicode": "e7db",
+      "unicode_decimal": 59355
+    },
+    {
+      "icon_id": "23057298",
+      "name": "长箭头",
+      "font_class": "arrdown",
+      "unicode": "e731",
+      "unicode_decimal": 59185
+    }
+  ]
+}
