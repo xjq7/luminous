@@ -12,3 +12,46 @@
   background-color: #f2f2f7;
   cursor: pointer;
 }
+
+.export-modal {
+  .content {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+
+    .preview {
+      padding: 8px;
+      width: 368px;
+      height: 368px;
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==)
+        left center;
+
+      .image {
+        width: 360px;
+        height: 360px;
+      }
+    }
+
+    .config {
+      margin-left: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .form {
+        .color {
+          width: 26px;
+          height: 26px;
+          cursor: pointer;
+        }
+      }
+
+      .operator {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+    }
+  }
+}

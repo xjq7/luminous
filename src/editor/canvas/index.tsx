@@ -4,6 +4,7 @@ import { CmpRender } from './render';
 import useToolbarStore, { ToolBarState } from '~/store/toolbar';
 import useEventHandler from './useEventHandler';
 import useCanvasStore from '~/store/canvas';
+import useHotkeys from './useHotkeys';
 
 function RenderGenCmp() {
   const { genCmp } = useModelStore((state) => state);
@@ -22,19 +23,34 @@ function RenderCmps() {
 
 export default function Canvas() {
   const setApp = useCanvasStore((state) => state.setApp);
-  const { onPointDown, onPointMove, onPointUp, onSelect } = useEventHandler();
+  const zoomLayer = useModelStore((state) => state.zoomLayer);
+  const {
+    onPointDown,
+    onPointMove,
+    onPointUp,
+    onSelect,
+    onPropertyChange,
+    onViewMove,
+    onViewZoom,
+  } = useEventHandler();
 
   const state = useToolbarStore((state) => state.state);
 
   const visible = ![ToolBarState.Dragger].includes(state);
 
+  useHotkeys();
+
   return (
     <App
+      zoomLayer={zoomLayer}
       visible={visible}
       onPointDown={onPointDown}
       onPointMove={onPointMove}
       onPointUp={onPointUp}
       onSelect={onSelect}
+      onPropertyChange={onPropertyChange}
+      onViewMove={onViewMove}
+      onViewZoom={onViewZoom}
       onAppChange={(app) => {
         setApp(app);
       }}

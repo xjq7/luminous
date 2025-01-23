@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useEffect, useRef } from 'react';
-import { IPointData, PointerEvent } from 'leafer-ui';
+import { IPointData, IUI, MoveEvent, PointerEvent, ZoomEvent } from 'leafer-ui';
 import { useShallow } from 'zustand/react/shallow';
 import useModelStore from '~/store/model';
 import useToolbarStore, { ToolBarState } from '~/store/toolbar';
@@ -8,22 +8,29 @@ import { CmpType } from '~/interface/cmp';
 import { generateCmp } from './generator';
 import { EditorEvent } from '@leafer-in/editor';
 import useCanvasStore from '~/store/canvas';
+import usePropertyChange from './usePropertyChange';
+import debounce from 'lodash-es/debounce';
 
 export default function useEventHandler() {
   const pointDownRef = useRef<IPointData>();
   const app = useCanvasStore((state) => state.app);
   const appRef = useRef(app);
 
+  const { onChange: onPropertyChange } = usePropertyChange();
+
   useEffect(() => {
     appRef.current = app;
   }, [app]);
 
-  const { setGenCmp, addCmp } = useModelStore(
-    useShallow((state) => ({
-      addCmp: state.addCmp,
-      setGenCmp: state.setGenCmp,
-    }))
-  );
+  const { setGenCmp, addCmp, updateZoomLayer, updateSelectCmpIds } =
+    useModelStore(
+      useShallow((state) => ({
+        addCmp: state.addCmp,
+        setGenCmp: state.setGenCmp,
+        updateZoomLayer: state.updateZoomLayer,
+        updateSelectCmpIds: state.updateSelectCmpIds,
+      }))
+    );
 
   const setState = useToolbarStore((state) => state.setState);
 
@@ -116,8 +123,40 @@ export default function useEventHandler() {
   const onSelect = (evt: EditorEvent) => {
     if (!evt.value) return;
     if (Array.isArray(evt.value) && evt.value.length === 0) return;
+    const selectEl = evt.value;
+
+    if (selectEl) {
+      let selectEls: IUI[] = [];
+      if (!Array.isArray(selectEl)) {
+        selectEls = [selectEl];
+      } else {
+        selectEls = selectEl;
+      }
+      console.log(selectEls);
+
+      updateSelectCmpIds(selectEls.map((el) => el.id as string));
+    }
+
     setState(ToolBarState.Select);
   };
 
-  return { onPointDown, onPointMove, onPointUp, onSelect };
+  const onViewMove = debounce((evt: MoveEvent) => {
+    const { x, y } = evt.target.zoomLayer || {};
+    updateZoomLayer({ x, y });
+  }, 500);
+
+  const onViewZoom = debounce((evt: ZoomEvent) => {
+    if (!evt.target.zoomLayer) return;
+    updateZoomLayer({ scale: evt.target.zoomLayer.scaleX });
+  }, 500);
+
+  return {
+    onPointDown,
+    onPointMove,
+    onPointUp,
+    onSelect,
+    onPropertyChange,
+    onViewMove,
+    onViewZoom,
+  };
 }

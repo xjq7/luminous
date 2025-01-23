@@ -1,0 +1,1 @@
+export const PROPERTY_CHANGE_THROTTLE_WAIT = 200;

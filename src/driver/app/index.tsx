@@ -1,5 +1,12 @@
 import { forwardRef, PropsWithChildren, useEffect } from 'react';
-import { App as LeaferApp, UI, PointerEvent } from 'leafer-ui';
+import {
+  App as LeaferApp,
+  UI,
+  PointerEvent,
+  PropertyEvent,
+  ZoomEvent,
+  MoveEvent,
+} from 'leafer-ui';
 import {
   Editor,
   EditorEvent,
@@ -12,11 +19,20 @@ import useLeaferComponent from '~/driver/hooks/useLeaferComponent';
 import '@leafer-in/viewport';
 import '@leafer-in/export';
 import '@leafer-in/text-editor';
+import '@leafer-in/view';
+
+export interface IZoomLayer {
+  x?: number;
+  y?: number;
+  scale?: number;
+}
 
 export interface AppProps {
   // 是否开启 editor
   visible?: boolean;
   hittable?: boolean;
+  zoomLayer?: IZoomLayer;
+  selectCmpIds?: string[];
   onPointDown?: (e: PointerEvent) => void;
   onPointUp?: (e: PointerEvent) => void;
   onPointMove?: (e: PointerEvent) => void;
@@ -26,6 +42,9 @@ export interface AppProps {
   onSelect?: (e: EditorEvent) => void;
   onTap?: (e: PointerEvent) => void;
   onAppChange?: (app: LeaferApp) => void;
+  onPropertyChange?: (e: PropertyEvent) => void;
+  onViewMove?: (e: MoveEvent) => void;
+  onViewZoom?: (e: ZoomEvent) => void;
 }
 
 export interface AppRef {
@@ -47,8 +66,13 @@ function App(props: PropsWithChildren<AppProps>) {
     onSelect,
     onAppChange,
     onTap,
+    onPropertyChange,
+    onViewZoom,
+    onViewMove,
+    selectCmpIds = [],
     hittable = true,
     visible = true,
+    zoomLayer,
   } = props;
 
   const [leaferApp, isInit] = useLeaferComponent(() => {
@@ -71,6 +95,12 @@ function App(props: PropsWithChildren<AppProps>) {
     app.editor.on(EditorRotateEvent.ROTATE, onRotate);
 
     app.editor.on(EditorEvent.SELECT, onSelect);
+
+    app.editor.on(PropertyEvent.CHANGE, onPropertyChange);
+
+    app.tree.on(MoveEvent.MOVE, onViewMove);
+
+    app.tree.on(ZoomEvent.ZOOM, onViewZoom);
 
     app.on(PointerEvent.DOWN, onPointDown);
 
@@ -101,6 +131,30 @@ function App(props: PropsWithChildren<AppProps>) {
       leaferApp?.destroy();
     };
   }, [leaferApp]);
+
+  useEffect(() => {
+    if (!leaferApp) return;
+    const { x, y } = zoomLayer || {};
+
+    if (x !== undefined) {
+      leaferApp.tree.x = x;
+    }
+    if (y !== undefined) {
+      leaferApp.tree.y = y;
+    }
+  }, [leaferApp, zoomLayer?.x, zoomLayer?.y]);
+
+  useEffect(() => {
+    if (!leaferApp) return;
+    const { scale } = zoomLayer || {};
+    if (scale !== undefined) {
+      leaferApp.tree.zoomLayer.scaleX = leaferApp.tree.zoomLayer.scaleY = scale;
+    }
+  }, [leaferApp, zoomLayer?.scale]);
+
+  useEffect(() => {
+    if (!leaferApp) return;
+  }, [selectCmpIds]);
 
   return (
     <LeaferAppContext.Provider value={leaferApp}>

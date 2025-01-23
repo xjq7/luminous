@@ -41,6 +41,10 @@ export interface Cmp {
   skewX?: number;
   /** 垂直倾斜 */
   skewY?: number;
+  /** X 缩放 */
+  scaleX?: number;
+  /** Y 缩放 */
+  scaleY?: number;
   /** 层叠顺序 */
   zIndex?: number;
 
@@ -52,6 +56,7 @@ export interface TextCmp extends Cmp {
   text: string;
   fontSize: number;
   fontFamily: string;
+  autoHeight?: boolean;
 }
 
 export interface RectCmp extends Cmp {
