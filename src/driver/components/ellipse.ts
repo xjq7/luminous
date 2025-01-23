@@ -5,13 +5,15 @@ import useLeaferComponent from '~/driver/hooks/useLeaferComponent';
 
 type EllipseProps = Omit<IEllipseInputData, 'children'> & {};
 
-export default function Rectangle(props: PropsWithChildren<EllipseProps>) {
-  const [LeaferRect] = useLeaferComponent(() => {
+export default function EllipseComponent(
+  props: PropsWithChildren<EllipseProps>
+) {
+  const [LeaferEllipse] = useLeaferComponent(() => {
     const { children, ...restProps } = props;
     return new Ellipse(restProps);
   });
 
-  useLeaferPropsUpdate<Ellipse>(LeaferRect, props);
+  useLeaferPropsUpdate<Ellipse>(LeaferEllipse, props);
 
   return null;
 }

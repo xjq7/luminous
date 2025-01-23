@@ -8,34 +8,70 @@ interface Icon {
   name: string;
   size: number;
   type: ToolBarState;
+  onClick: () => void;
 }
-
-const icons: Icon[] = [
-  {
-    name: 'hand',
-    size: 18,
-    type: ToolBarState.Dragger,
-  },
-  {
-    name: 'juxing',
-    size: 18,
-    type: ToolBarState.Rect,
-  },
-  {
-    name: 'yuanxingweixuanzhong',
-    size: 19,
-    type: ToolBarState.Ellipse,
-  },
-
-  {
-    name: 'chuizhizhixian',
-    size: 20,
-    type: ToolBarState.Line,
-  },
-];
 
 export default function Toolbar() {
   const { state, setState } = useToolbarStore();
+
+  const icons: Icon[] = [
+    {
+      name: 'hand',
+      size: 18,
+      type: ToolBarState.Dragger,
+      onClick: () => {
+        setState(ToolBarState.Dragger);
+      },
+    },
+    {
+      name: 'xuanze',
+      size: 18,
+      type: ToolBarState.Select,
+      onClick: () => {
+        setState(ToolBarState.Select);
+      },
+    },
+    {
+      name: 'juxing',
+      size: 18,
+      type: ToolBarState.Rect,
+      onClick: () => {
+        setState(ToolBarState.Rect);
+      },
+    },
+    {
+      name: 'yuanxingweixuanzhong',
+      size: 19,
+      type: ToolBarState.Ellipse,
+      onClick: () => {
+        setState(ToolBarState.Ellipse);
+      },
+    },
+    {
+      name: 'A',
+      size: 20,
+      type: ToolBarState.Text,
+      onClick: () => {
+        setState(ToolBarState.Text);
+      },
+    },
+    {
+      name: 'chuizhizhixian',
+      size: 20,
+      type: ToolBarState.Line,
+      onClick: () => {
+        setState(ToolBarState.Line);
+      },
+    },
+    {
+      name: 'arrdown',
+      size: 20,
+      type: ToolBarState.Arrow,
+      onClick: () => {
+        setState(ToolBarState.Arrow);
+      },
+    },
+  ];
 
   return (
     <div className={S.toolbar}>
@@ -43,7 +79,7 @@ export default function Toolbar() {
         return (
           <div
             className={classNames(S.icon, state === icon.type && S.active)}
-            onClick={() => setState(icon.type)}
+            onClick={icon.onClick}
           >
             <Iconfont name={icon.name as IconType} size={icon.size} />
           </div>

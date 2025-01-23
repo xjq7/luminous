@@ -15,7 +15,8 @@ export type IconType =
   | 'daochu'
   | 'xiazai'
   | 'a-chexiaozhongzuoshangyibu'
-  | 'a-chexiaozhongzuoxiayibu-xianxing';
+  | 'a-chexiaozhongzuoxiayibu-xianxing'
+  | 'xuanze';
 
 interface Props
   extends React.DetailedHTMLProps<

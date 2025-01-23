@@ -1,14 +1,14 @@
+import { App } from 'leafer-ui';
 import { create } from 'zustand';
 
-export type CanvasState = 'down' | 'move' | '';
-
 export interface CanvasStore {
-  state: CanvasState;
+  app: App | null;
+  setApp: (leaferApp: App) => void;
 }
 
 const useCanvasStore = create<CanvasStore>((set) => ({
-  state: '',
-  setState: (state: CanvasState) => set({ state }),
+  app: null,
+  setApp: (app: App) => set({ app }),
 }));
 
 export default useCanvasStore;

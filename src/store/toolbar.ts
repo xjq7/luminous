@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 export enum ToolBarState {
+  Select,
   Dragger,
   Text,
   Rect,

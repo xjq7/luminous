@@ -1,17 +1,17 @@
 import { PropsWithChildren } from 'react';
-import { Text as LeaferText, ITextInputData } from 'leafer-ui';
+import { Text, ITextInputData } from 'leafer-ui';
 import useLeaferPropsUpdate from '~/driver/hooks/useLeaferPropsUpdate';
 import useLeaferComponent from '~/driver/hooks/useLeaferComponent';
 
 type TextProps = Omit<ITextInputData, 'children'> & {};
 
-export default function Text(props: PropsWithChildren<TextProps>) {
-  const [LeaferRect] = useLeaferComponent(() => {
+export default function TextComponent(props: PropsWithChildren<TextProps>) {
+  const [LeaferText] = useLeaferComponent(() => {
     const { children, ...restProps } = props;
-    return new LeaferText(restProps);
+    return new Text(restProps);
   });
 
-  useLeaferPropsUpdate<LeaferText>(LeaferRect, props);
+  useLeaferPropsUpdate<Text>(LeaferText, props);
 
   return null;
 }

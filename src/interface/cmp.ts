@@ -1,4 +1,10 @@
-import { IBlendMode, IPaint, IShadowEffect } from 'leafer-ui';
+import {
+  IArrowType,
+  IBlendMode,
+  IPaint,
+  IPointData,
+  IShadowEffect,
+} from 'leafer-ui';
 
 export interface Cmp {
   id: string;
@@ -37,6 +43,8 @@ export interface Cmp {
   skewY?: number;
   /** 层叠顺序 */
   zIndex?: number;
+
+  strokeWidth?: number;
 }
 
 export interface TextCmp extends Cmp {
@@ -54,9 +62,23 @@ export interface EllipseCmp extends Cmp {
   type: CmpType.Ellipse;
 }
 
+export interface LineCmp extends Cmp {
+  type: CmpType.Line;
+  toPoint?: IPointData;
+  points?: number[] | IPointData[];
+}
+
+export interface ArrowCmp extends Cmp {
+  type: CmpType.Arrow;
+  startArrow?: IArrowType;
+  endArrow?: IArrowType;
+  points?: number[] | IPointData[];
+}
+
 export enum CmpType {
   Text,
   Rect,
   Ellipse,
   Line,
+  Arrow,
 }

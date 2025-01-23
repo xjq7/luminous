@@ -1,13 +1,8 @@
-import {
-  forwardRef,
-  PropsWithChildren,
-  Ref,
-  useEffect,
-  useImperativeHandle,
-} from 'react';
+import { forwardRef, PropsWithChildren, Ref, useEffect } from 'react';
 import { App as LeaferApp, UI, PointerEvent } from 'leafer-ui';
 import {
   Editor,
+  EditorEvent,
   EditorMoveEvent,
   EditorRotateEvent,
   EditorScaleEvent,
@@ -15,21 +10,29 @@ import {
 import { LeaferAppContext } from '../context';
 import useLeaferComponent from '~/driver/hooks/useLeaferComponent';
 import '@leafer-in/viewport';
+import '@leafer-in/export';
+import '@leafer-in/text-editor';
 
 export interface AppProps {
+  // 是否开启 editor
   visible?: boolean;
+  hittable?: boolean;
   onPointDown?: (e: PointerEvent) => void;
   onPointUp?: (e: PointerEvent) => void;
   onPointMove?: (e: PointerEvent) => void;
-
   onMove?: (e: EditorMoveEvent) => void;
   onScale?: (e: EditorScaleEvent) => void;
   onRotate?: (e: EditorRotateEvent) => void;
+  onSelect?: (e: EditorEvent) => void;
+  onTap?: (e: PointerEvent) => void;
+  onAppChange?: (app: LeaferApp) => void;
 }
 
-interface AppRef {
+export interface AppRef {
   select: (targets: UI[]) => void;
   hover: (target: UI) => void;
+  cancel: () => void;
+  getApp: () => LeaferApp;
 }
 
 function App(props: PropsWithChildren<AppProps>, ref: Ref<AppRef>) {
@@ -41,6 +44,11 @@ function App(props: PropsWithChildren<AppProps>, ref: Ref<AppRef>) {
     onRotate,
     onScale,
     onPointMove,
+    onSelect,
+    onAppChange,
+    onTap,
+    hittable = true,
+    visible = true,
   } = props;
 
   const [leaferApp, isInit] = useLeaferComponent(() => {
@@ -48,6 +56,9 @@ function App(props: PropsWithChildren<AppProps>, ref: Ref<AppRef>) {
       view: window,
       fill: 'white',
       tree: { type: 'viewport' },
+      move: {
+        dragAnimate: true,
+      },
     });
 
     app.sky = app.addLeafer();
@@ -59,36 +70,31 @@ function App(props: PropsWithChildren<AppProps>, ref: Ref<AppRef>) {
 
     app.editor.on(EditorRotateEvent.ROTATE, onRotate);
 
+    app.editor.on(EditorEvent.SELECT, onSelect);
+
     app.on(PointerEvent.DOWN, onPointDown);
 
     app.on(PointerEvent.UP, onPointUp);
 
-    app.on(PointerEvent.TAP, (e: PointerEvent) => {
-      console.log(e);
-    });
+    app.on(PointerEvent.TAP, onTap);
 
     app.on(PointerEvent.MOVE, onPointMove);
+
+    onAppChange?.(app);
 
     return app;
   });
 
-  useImperativeHandle(
-    ref,
-    () => {
-      return {
-        select(target: UI[]) {
-          leaferApp.editor.select(target);
-        },
-        cancel() {
-          leaferApp.editor.cancel();
-        },
-        hover(target: UI) {
-          leaferApp.editor.select(target);
-        },
-      };
-    },
-    []
-  );
+  useEffect(() => {
+    if (!leaferApp) return;
+    leaferApp.editor.visible = visible;
+    if (leaferApp.config.move) leaferApp.config.move.drag = !visible;
+  }, [visible, leaferApp]);
+
+  useEffect(() => {
+    if (!leaferApp) return;
+    leaferApp.editor.hittable = hittable;
+  }, [hittable, leaferApp]);
 
   useEffect(() => {
     return () => {
