@@ -1,4 +1,4 @@
-import { forwardRef, PropsWithChildren, Ref, useEffect } from 'react';
+import { forwardRef, PropsWithChildren, useEffect } from 'react';
 import { App as LeaferApp, UI, PointerEvent } from 'leafer-ui';
 import {
   Editor,
@@ -35,7 +35,7 @@ export interface AppRef {
   getApp: () => LeaferApp;
 }
 
-function App(props: PropsWithChildren<AppProps>, ref: Ref<AppRef>) {
+function App(props: PropsWithChildren<AppProps>) {
   const {
     children,
     onPointUp,

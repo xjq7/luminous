@@ -75,10 +75,16 @@ export interface ArrowCmp extends Cmp {
   points?: number[] | IPointData[];
 }
 
+export interface ImageCmp extends Cmp {
+  type: CmpType.Image;
+  url: string;
+}
+
 export enum CmpType {
   Text,
   Rect,
   Ellipse,
   Line,
   Arrow,
+  Image,
 }

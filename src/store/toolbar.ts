@@ -8,6 +8,7 @@ export enum ToolBarState {
   Ellipse,
   Arrow,
   Line,
+  Image,
 }
 
 export interface ToolBarStore {
