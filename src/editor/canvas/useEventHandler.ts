@@ -16,6 +16,7 @@ import { generateCmp } from './generator';
 import {
   EditorEvent,
   EditorMoveEvent,
+  EditorRotateEvent,
   EditorScaleEvent,
 } from '@leafer-in/editor';
 import useCanvasStore from '~/store/canvas';
@@ -168,14 +169,11 @@ export default function useEventHandler() {
     if (!Array.isArray(target)) {
       target = [target];
     }
-
     const cmps = target.map((cmp) => ({ id: cmp.id, x: cmp.x, y: cmp.y }));
     updateCmps(cmps);
   };
 
   const onScaleEnd = (evt: EditorScaleEvent) => {
-    console.log(evt.current);
-
     let target = (evt.current as any).leafList.list as UI[];
 
     if (!Array.isArray(target)) {
@@ -189,6 +187,23 @@ export default function useEventHandler() {
     updateCmps(cmps);
   };
 
+  const onRotateEnd = (evt: EditorRotateEvent) => {
+    console.log(evt);
+
+    let target = (evt.current as any).leafList.list as UI[];
+
+    if (!Array.isArray(target)) {
+      target = [target];
+    }
+    const cmps = target.map((cmp) => ({
+      id: cmp.id,
+      rotation: cmp.rotation,
+      x: cmp.x,
+      y: cmp.y,
+    }));
+    updateCmps(cmps);
+  };
+
   return {
     onPointDown,
     onPointMove,
@@ -196,6 +211,7 @@ export default function useEventHandler() {
     onSelect,
     onMoveEnd,
     onScaleEnd,
+    onRotateEnd,
     onViewMove,
     onViewZoom,
   };

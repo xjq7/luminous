@@ -1,50 +1,46 @@
 # 画板
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+基于 Leaferjs 开发的画板
 
-Currently, two official plugins are available:
+UI 仿照 excalidraw
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+[预览地址](https://luminous.xjq.icu)
 
-## Expanding the ESLint configuration
+## 功能
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- 基础能力
+- [x] 画布拖拽、缩放
+- [x] 图形编辑
+  - [x] 移动
+  - [x] 缩放
+- 基础图形
+  - [x] 矩形
+  - [x] 圆
+  - [x] 线
+  - [x] 文字
+  - [] 画笔
+  - [] 图片
+- 导出能力
+  - [x] 背景设置
+  - [x] 导出图片(png, jpg)
+  - [x] 数据导出
+- [x] 撤销重做
+- [] 设置器
 
-- Configure the top-level `parserOptions` property like this:
+## 开发
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+node > 18
+
+pnpm === 9
+
+安装依赖
+
+```sh
+pnpm i
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+启动
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react';
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-});
+```sh
+pnpm dev
 ```

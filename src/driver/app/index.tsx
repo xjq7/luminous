@@ -13,6 +13,7 @@ import {
   EditorRotateEvent,
   EditorScaleEvent,
 } from '@leafer-in/editor';
+import { usePrevious } from 'react-use';
 import { LeaferAppContext } from '../context';
 import useLeaferComponent from '~/driver/hooks/useLeaferComponent';
 import '@leafer-in/viewport';
@@ -20,7 +21,6 @@ import '@leafer-in/export';
 import '@leafer-in/text-editor';
 import '@leafer-in/view';
 import '@leafer-in/find';
-import { usePrevious } from 'react-use';
 
 export interface IZoomLayer {
   x?: number;
@@ -81,10 +81,15 @@ function App(props: PropsWithChildren<AppProps>) {
   } = props;
   const moveStateRef = useRef(null);
   const scaleStateRef = useRef(null);
+  const rotateStateRef = useRef(null);
   const preSelectCmpIds = usePrevious(selectCmpIds);
 
   const [leaferApp, isInit] = useLeaferComponent(() => {
-    const handlePointUp = (evt: PointerEvent) => {
+    const handlePointUp = () => {
+      if (rotateStateRef.current) {
+        onRotateEnd?.(rotateStateRef.current);
+        rotateStateRef.current = null;
+      }
       if (moveStateRef.current) {
         onMoveEnd?.(moveStateRef.current);
         moveStateRef.current = null;
@@ -118,6 +123,10 @@ function App(props: PropsWithChildren<AppProps>) {
 
     app.editor.on(EditorMoveEvent.MOVE, (e) => {
       moveStateRef.current = e;
+    });
+
+    app.editor.on(EditorRotateEvent.ROTATE, (e) => {
+      rotateStateRef.current = e;
     });
 
     app.editor.on(EditorRotateEvent.ROTATE, onRotate);

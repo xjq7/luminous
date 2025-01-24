@@ -39,6 +39,7 @@ export default function Canvas() {
     onViewZoom,
     onMoveEnd,
     onScaleEnd,
+    onRotateEnd,
   } = useEventHandler();
 
   const state = useToolbarStore((state) => state.state);
@@ -58,6 +59,7 @@ export default function Canvas() {
       onSelect={onSelect}
       onMoveEnd={onMoveEnd}
       onScaleEnd={onScaleEnd}
+      onRotateEnd={onRotateEnd}
       onViewMove={onViewMove}
       onViewZoom={onViewZoom}
       onAppChange={(app) => {

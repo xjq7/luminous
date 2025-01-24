@@ -4,6 +4,7 @@ import { shallow } from 'zustand/shallow';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { IZoomLayer } from '~/driver/app';
 import { Cmp } from '~/interface/cmp';
+import { AnyObj } from '~/utils/types';
 
 export interface ModelStore {
   cmps: Cmp[];
@@ -57,13 +58,22 @@ const useModelStore = create<
           }, new Map());
           return set((state) => {
             const { cmps } = state;
-            const newCmps = cmps.map((cmp, idx) => {
+            let isUpdate = false;
+            const newCmps = cmps.map((cmp: Cmp, idx) => {
               if (cmpMap.has(cmp.id)) {
-                return { ...cmps[idx], ...cmpMap.get(cmp.id) };
+                const cmpData = cmpMap.get(cmp.id);
+                const isCmpUpdate = Object.keys(cmpData).some(
+                  (key) => cmpData[key] !== (cmp as AnyObj)[key]
+                );
+                if (isCmpUpdate) {
+                  isUpdate = isCmpUpdate;
+                  return { ...cmps[idx], ...cmpData };
+                }
+                return cmps[idx];
               }
               return cmp;
             });
-
+            if (!isUpdate) return state;
             return { ...state, cmps: newCmps };
           });
         },

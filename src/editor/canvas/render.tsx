@@ -9,7 +9,6 @@ import {
   EllipseProps,
 } from '~/driver';
 import { Cmp, CmpType } from '~/interface/cmp';
-import usePropertyChange from './usePropertyChange';
 
 export function CmpRender(cmp: Cmp) {
   const { type, locked, ...restCmp } = cmp;
@@ -21,33 +20,27 @@ export function CmpRender(cmp: Cmp) {
 }
 
 export function RectRender(props: RectProps) {
-  const { onChange } = usePropertyChange();
-  return <Rect {...props} onChange={onChange}></Rect>;
+  return <Rect {...props}></Rect>;
 }
 
 export function EllipseRender(props: EllipseProps) {
-  const { onChange } = usePropertyChange();
-  return <Ellipse {...props} onChange={onChange}></Ellipse>;
+  return <Ellipse {...props}></Ellipse>;
 }
 
 export function TextRender(props: EllipseProps) {
-  const { onChange } = usePropertyChange();
-  return <Text {...props} onChange={onChange}></Text>;
+  return <Text {...props}></Text>;
 }
 
 export function LineRender(props: EllipseProps) {
-  const { onChange } = usePropertyChange();
-  return <Line {...props} onChange={onChange}></Line>;
+  return <Line {...props}></Line>;
 }
 
 export function ArrowRender(props: EllipseProps) {
-  const { onChange } = usePropertyChange();
-  return <Arrow {...props} onChange={onChange}></Arrow>;
+  return <Arrow {...props}></Arrow>;
 }
 
 export function ImageRender(props: EllipseProps) {
-  const { onChange } = usePropertyChange();
-  return <Image {...props} onChange={onChange}></Image>;
+  return <Image {...props}></Image>;
 }
 
 const CmpRenderMap: Record<CmpType, (cmp: Partial<Cmp>) => React.ReactElement> =

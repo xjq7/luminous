@@ -1,7 +1,9 @@
-import Editor from './editor';
-import './App.css';
 import { ConfigProvider } from 'antd';
+import Editor from './editor';
+
 import { primaryColor } from './styles/theme';
+import './App.css';
+import Github from './components/Github';
 
 function App() {
   return (
@@ -12,7 +14,8 @@ function App() {
         },
       }}
     >
-      <Editor></Editor>
+      <Editor />
+      <Github />
     </ConfigProvider>
   );
 }
