@@ -11,7 +11,7 @@ import {
 import { useShallow } from 'zustand/react/shallow';
 import useModelStore from '~/store/model';
 import useToolbarStore, { ToolBarState } from '~/store/toolbar';
-import { CmpType } from '~/interface/cmp';
+import { Cmp, CmpType } from '~/interface/cmp';
 import { generateCmp } from './generator';
 import {
   EditorEvent,
@@ -21,6 +21,32 @@ import {
 } from '@leafer-in/editor';
 import useCanvasStore from '~/store/canvas';
 import debounce from 'lodash-es/debounce';
+
+function debounceUpdateCmpsWithMerge(fn: any, wait: number) {
+  let timer: NodeJS.Timeout | null = null;
+  const cmpMaps = new Map<string, Partial<Cmp>>();
+  return (cmps: Partial<Cmp>[]) => {
+    cmps.forEach((cmp) => {
+      cmpMaps.set(cmp.id as string, {
+        ...cmpMaps.get(cmp.id as string),
+        ...cmp,
+      });
+    });
+
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      const mergeCmps: Partial<Cmp>[] = [];
+      cmpMaps.forEach((cmp) => {
+        mergeCmps.push(cmp);
+      });
+      fn(mergeCmps);
+      cmpMaps.clear();
+      timer = null;
+    }, wait);
+  };
+}
 
 export default function useEventHandler() {
   const pointDownRef = useRef<IPointData>();
@@ -42,6 +68,8 @@ export default function useEventHandler() {
         updateCmps: state.updateCmps,
       }))
     );
+
+  const debounceUpdateCmps = debounceUpdateCmpsWithMerge(updateCmps, 100);
 
   const setState = useToolbarStore((state) => state.setState);
 
@@ -170,7 +198,7 @@ export default function useEventHandler() {
       target = [target];
     }
     const cmps = target.map((cmp) => ({ id: cmp.id, x: cmp.x, y: cmp.y }));
-    updateCmps(cmps);
+    debounceUpdateCmps(cmps);
   };
 
   const onScaleEnd = (evt: EditorScaleEvent) => {
@@ -184,12 +212,10 @@ export default function useEventHandler() {
       width: cmp.width,
       height: cmp.height,
     }));
-    updateCmps(cmps);
+    debounceUpdateCmps(cmps);
   };
 
   const onRotateEnd = (evt: EditorRotateEvent) => {
-    console.log(evt);
-
     let target = (evt.current as any).leafList.list as UI[];
 
     if (!Array.isArray(target)) {
@@ -198,10 +224,8 @@ export default function useEventHandler() {
     const cmps = target.map((cmp) => ({
       id: cmp.id,
       rotation: cmp.rotation,
-      x: cmp.x,
-      y: cmp.y,
     }));
-    updateCmps(cmps);
+    debounceUpdateCmps(cmps);
   };
 
   return {

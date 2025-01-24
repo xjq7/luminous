@@ -11,12 +11,12 @@ import {
 import { Cmp, CmpType } from '~/interface/cmp';
 
 export function CmpRender(cmp: Cmp) {
-  const { type, locked, ...restCmp } = cmp;
+  const { type, locked, rotation = 0, ...restCmp } = cmp;
   const render = CmpRenderMap[type];
 
   const editable = !locked;
 
-  return render({ ...restCmp, editable });
+  return render({ ...restCmp, rotation, editable });
 }
 
 export function RectRender(props: RectProps) {
