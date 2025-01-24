@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useRef } from 'react';
 import { PropertyEvent } from 'leafer-ui';
-import throttle from 'lodash-es/throttle';
 
 import { PROPERTY_CHANGE_THROTTLE_WAIT } from '~/constants/canvas';
 import { Cmp, TextCmp } from '~/interface/cmp';
 import { DeepPartial } from '~/utils/typeUtils';
 import useModelStore from '~/store/model';
+import { debounce } from 'lodash-es';
 
 const PropertySetMap: Record<
   string,
@@ -92,30 +92,26 @@ export default function usePropertyChange() {
 
   // 这里限制更新频率，减少 React 组件渲染频率
   const throttleUpdate = useMemo(() => {
-    return throttle(
-      () => {
-        setTimeout(() => {
-          Object.keys(changedPropsRef.current).forEach((currentId) => {
-            Object.keys(changedPropsRef.current[currentId]).forEach(
-              (currentCmpPropName) => {
-                const propertySet = PropertySetMap[currentCmpPropName];
-                if (propertySet) {
-                  updateCmpById(
-                    currentId,
-                    propertySet(
-                      ...changedPropsRef.current[currentId][currentCmpPropName]
-                    )
-                  );
-                }
+    return debounce(() => {
+      setTimeout(() => {
+        Object.keys(changedPropsRef.current).forEach((currentId) => {
+          Object.keys(changedPropsRef.current[currentId]).forEach(
+            (currentCmpPropName) => {
+              const propertySet = PropertySetMap[currentCmpPropName];
+              if (propertySet) {
+                // updateCmpById(
+                //   currentId,
+                //   propertySet(
+                //     ...changedPropsRef.current[currentId][currentCmpPropName]
+                //   )
+                // );
               }
-            );
-          });
-          changedPropsRef.current = {};
-        }, 0);
-      },
-      PROPERTY_CHANGE_THROTTLE_WAIT,
-      { trailing: true }
-    );
+            }
+          );
+        });
+        changedPropsRef.current = {};
+      }, 0);
+    }, PROPERTY_CHANGE_THROTTLE_WAIT);
   }, []);
 
   const onChange = (e: PropertyEvent) => {

@@ -6,6 +6,7 @@ import useModelStore from '~/store/model';
 
 export default function useHotkeys() {
   const app = useCanvasStore((state) => state.app);
+
   const { removeCmpById } = useModelStore(
     useShallow((state) => ({
       removeCmpById: state.removeCmpById,
@@ -16,8 +17,6 @@ export default function useHotkeys() {
     const delKey = 'backspace';
 
     hotkeys(delKey, () => {
-      console.log(useModelStore.getState().selectCmpIds);
-
       removeCmpById(useModelStore.getState().selectCmpIds);
     });
 

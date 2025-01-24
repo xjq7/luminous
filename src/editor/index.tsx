@@ -2,14 +2,18 @@ import Canvas from './canvas';
 import Menu from './menu';
 import Settings from './settings';
 import Toolbar from './toolbar';
+import UndoRedo from './undo-redo';
+import Zoom from './zoom';
 
 export default function Editor() {
   return (
     <>
-      <Canvas></Canvas>
-      <Settings></Settings>
-      <Toolbar></Toolbar>
-      <Menu></Menu>
+      <Canvas />
+      <Settings />
+      <Toolbar />
+      <Menu />
+      <Zoom />
+      <UndoRedo />
     </>
   );
 }

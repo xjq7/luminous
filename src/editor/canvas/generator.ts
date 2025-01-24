@@ -1,5 +1,12 @@
 import { v4 } from 'uuid';
-import { ArrowCmp, Cmp, CmpType, LineCmp, TextCmp } from '~/interface/cmp';
+import {
+  ArrowCmp,
+  Cmp,
+  CmpType,
+  ImageCmp,
+  LineCmp,
+  TextCmp,
+} from '~/interface/cmp';
 import { primaryColor } from '../material/theme';
 
 export function generateCmp(
@@ -67,6 +74,11 @@ export function generateCmp(
       stroke: primaryColor,
       strokeWidth: 2,
     } as ArrowCmp;
+  } else if (cmpType === CmpType.Image) {
+    return {
+      ...baseModel,
+      url: '',
+    } as ImageCmp;
   }
 
   return null;

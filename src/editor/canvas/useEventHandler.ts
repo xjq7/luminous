@@ -1,34 +1,44 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useEffect, useRef } from 'react';
-import { IPointData, IUI, MoveEvent, PointerEvent, ZoomEvent } from 'leafer-ui';
+import {
+  IPointData,
+  IUI,
+  MoveEvent,
+  PointerEvent,
+  UI,
+  ZoomEvent,
+} from 'leafer-ui';
 import { useShallow } from 'zustand/react/shallow';
 import useModelStore from '~/store/model';
 import useToolbarStore, { ToolBarState } from '~/store/toolbar';
 import { CmpType } from '~/interface/cmp';
 import { generateCmp } from './generator';
-import { EditorEvent } from '@leafer-in/editor';
+import {
+  EditorEvent,
+  EditorMoveEvent,
+  EditorScaleEvent,
+} from '@leafer-in/editor';
 import useCanvasStore from '~/store/canvas';
-import usePropertyChange from './usePropertyChange';
 import debounce from 'lodash-es/debounce';
 
 export default function useEventHandler() {
   const pointDownRef = useRef<IPointData>();
-  const app = useCanvasStore((state) => state.app);
+  const { app, setGenCmp } = useCanvasStore(
+    useShallow((state) => ({ app: state.app, setGenCmp: state.setGenCmp }))
+  );
   const appRef = useRef(app);
-
-  const { onChange: onPropertyChange } = usePropertyChange();
 
   useEffect(() => {
     appRef.current = app;
   }, [app]);
 
-  const { setGenCmp, addCmp, updateZoomLayer, updateSelectCmpIds } =
+  const { addCmp, updateZoomLayer, updateSelectCmpIds, updateCmps } =
     useModelStore(
       useShallow((state) => ({
         addCmp: state.addCmp,
-        setGenCmp: state.setGenCmp,
         updateZoomLayer: state.updateZoomLayer,
         updateSelectCmpIds: state.updateSelectCmpIds,
+        updateCmps: state.updateCmps,
       }))
     );
 
@@ -103,7 +113,7 @@ export default function useEventHandler() {
   const onPointUp = () => {
     pointDownRef.current = undefined;
 
-    const genCmp = useModelStore.getState().genCmp;
+    const genCmp = useCanvasStore.getState().genCmp;
     if (genCmp) {
       addCmp({ ...genCmp, locked: false });
       setGenCmp(null);
@@ -121,7 +131,10 @@ export default function useEventHandler() {
   };
 
   const onSelect = (evt: EditorEvent) => {
-    if (!evt.value) return;
+    if (!evt.value) {
+      updateSelectCmpIds([]);
+      return;
+    }
     if (Array.isArray(evt.value) && evt.value.length === 0) return;
     const selectEl = evt.value;
 
@@ -132,7 +145,6 @@ export default function useEventHandler() {
       } else {
         selectEls = selectEl;
       }
-      console.log(selectEls);
 
       updateSelectCmpIds(selectEls.map((el) => el.id as string));
     }
@@ -150,12 +162,40 @@ export default function useEventHandler() {
     updateZoomLayer({ scale: evt.target.zoomLayer.scaleX });
   }, 500);
 
+  const onMoveEnd = (evt: EditorMoveEvent) => {
+    let target = (evt.current as any).leafList.list as UI[];
+
+    if (!Array.isArray(target)) {
+      target = [target];
+    }
+
+    const cmps = target.map((cmp) => ({ id: cmp.id, x: cmp.x, y: cmp.y }));
+    updateCmps(cmps);
+  };
+
+  const onScaleEnd = (evt: EditorScaleEvent) => {
+    console.log(evt.current);
+
+    let target = (evt.current as any).leafList.list as UI[];
+
+    if (!Array.isArray(target)) {
+      target = [target];
+    }
+    const cmps = target.map((cmp) => ({
+      id: cmp.id,
+      width: cmp.width,
+      height: cmp.height,
+    }));
+    updateCmps(cmps);
+  };
+
   return {
     onPointDown,
     onPointMove,
     onPointUp,
     onSelect,
-    onPropertyChange,
+    onMoveEnd,
+    onScaleEnd,
     onViewMove,
     onViewZoom,
   };

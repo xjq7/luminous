@@ -5,33 +5,40 @@ import useToolbarStore, { ToolBarState } from '~/store/toolbar';
 import useEventHandler from './useEventHandler';
 import useCanvasStore from '~/store/canvas';
 import useHotkeys from './useHotkeys';
+import { useShallow } from 'zustand/react/shallow';
 
 function RenderGenCmp() {
-  const { genCmp } = useModelStore((state) => state);
+  const genCmp = useCanvasStore((state) => state.genCmp);
 
   if (!genCmp) return null;
-  return CmpRender(genCmp);
+  return <CmpRender {...genCmp}></CmpRender>;
 }
 
 function RenderCmps() {
-  const cmps = useModelStore((state) => state.cmps);
+  const { cmps } = useModelStore();
 
   return cmps.map((cmp) => {
-    return CmpRender(cmp);
+    return <CmpRender key={cmp.id} {...cmp}></CmpRender>;
   });
 }
 
 export default function Canvas() {
   const setApp = useCanvasStore((state) => state.setApp);
-  const zoomLayer = useModelStore((state) => state.zoomLayer);
+  const { zoomLayer, selectCmpIds } = useModelStore(
+    useShallow((state) => ({
+      zoomLayer: state.zoomLayer,
+      selectCmpIds: state.selectCmpIds,
+    }))
+  );
   const {
     onPointDown,
     onPointMove,
     onPointUp,
     onSelect,
-    onPropertyChange,
     onViewMove,
     onViewZoom,
+    onMoveEnd,
+    onScaleEnd,
   } = useEventHandler();
 
   const state = useToolbarStore((state) => state.state);
@@ -44,11 +51,13 @@ export default function Canvas() {
     <App
       zoomLayer={zoomLayer}
       visible={visible}
+      selectCmpIds={selectCmpIds}
       onPointDown={onPointDown}
       onPointMove={onPointMove}
       onPointUp={onPointUp}
       onSelect={onSelect}
-      onPropertyChange={onPropertyChange}
+      onMoveEnd={onMoveEnd}
+      onScaleEnd={onScaleEnd}
       onViewMove={onViewMove}
       onViewZoom={onViewZoom}
       onAppChange={(app) => {

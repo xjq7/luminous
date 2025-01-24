@@ -1,17 +1,22 @@
 import { PropsWithChildren } from 'react';
-import { Line, ILineInputData } from 'leafer-ui';
+import { Line, ILineInputData, PropertyEvent } from 'leafer-ui';
 import useLeaferPropsUpdate from '~/driver/hooks/useLeaferPropsUpdate';
 import useLeaferComponent from '~/driver/hooks/useLeaferComponent';
 
-type LineProps = Omit<ILineInputData, 'children'> & {};
+export type LineProps = Omit<ILineInputData, 'children'> & {
+  onChange?: (e: PropertyEvent) => void;
+};
 
 export default function Component(props: PropsWithChildren<LineProps>) {
-  const [LeaferLine] = useLeaferComponent(() => {
-    const { children, ...restProps } = props;
-    return new Line(restProps);
+  const [leaferLine] = useLeaferComponent(() => {
+    const { children, onChange, ...restProps } = props;
+    const leaferLine = new Line(restProps);
+
+    leaferLine.on(PropertyEvent.CHANGE, onChange);
+    return leaferLine;
   });
 
-  useLeaferPropsUpdate<Line>(LeaferLine, props);
+  useLeaferPropsUpdate<Line>(leaferLine, props);
 
   return null;
 }

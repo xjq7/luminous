@@ -15,6 +15,7 @@ export default function Menu() {
   const pickrRef = useRef<Pickr | null>(null);
   const [image, setImage] = useState('');
   const [backgroundColor, setBackgroundColor] = useState(primaryColor);
+  const enabledBackground = Form.useWatch(['background'], form);
 
   const items: MenuProps['items'] = [
     {
@@ -79,7 +80,9 @@ export default function Menu() {
       pickrRef.current.show();
 
       pickrRef.current.on('save', (pickrInstance: any) => {
-        setBackgroundColor(pickrInstance.toHEXA().toString());
+        if (pickrInstance) {
+          setBackgroundColor(pickrInstance.toHEXA()?.toString());
+        }
       });
     } else {
       pickrRef.current.show();
@@ -93,8 +96,6 @@ export default function Menu() {
     };
   }, []);
 
-  useEffect(() => {}, []);
-
   useEffect(() => {
     if (!exportModelOpen) {
       pickrRef.current?.hide();
@@ -102,10 +103,16 @@ export default function Menu() {
   }, [exportModelOpen]);
 
   useEffect(() => {
-    app?.export('jpg', { fill: backgroundColor }).then((result) => {
+    let bgColor = backgroundColor;
+
+    if (!enabledBackground) {
+      bgColor = 'transparent';
+    }
+
+    app?.export('jpg', { fill: bgColor }).then((result) => {
       setImage(result.data);
     });
-  }, [exportModelOpen, app, backgroundColor]);
+  }, [exportModelOpen, app, backgroundColor, enabledBackground]);
 
   return (
     <>

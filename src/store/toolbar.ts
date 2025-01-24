@@ -18,7 +18,6 @@ export interface ToolBarStore {
 
 const useToolbarStore = create<ToolBarStore>((set) => ({
   state: ToolBarState.Dragger,
-
   setState: (state: ToolBarState) => set({ state }),
 }));
 

@@ -1,9 +1,8 @@
-import { forwardRef, PropsWithChildren, useEffect } from 'react';
+import { forwardRef, PropsWithChildren, useEffect, useRef } from 'react';
 import {
   App as LeaferApp,
   UI,
   PointerEvent,
-  PropertyEvent,
   ZoomEvent,
   MoveEvent,
 } from 'leafer-ui';
@@ -20,6 +19,8 @@ import '@leafer-in/viewport';
 import '@leafer-in/export';
 import '@leafer-in/text-editor';
 import '@leafer-in/view';
+import '@leafer-in/find';
+import { usePrevious } from 'react-use';
 
 export interface IZoomLayer {
   x?: number;
@@ -37,12 +38,14 @@ export interface AppProps {
   onPointUp?: (e: PointerEvent) => void;
   onPointMove?: (e: PointerEvent) => void;
   onMove?: (e: EditorMoveEvent) => void;
+  onMoveEnd?: (e: EditorMoveEvent) => void;
   onScale?: (e: EditorScaleEvent) => void;
+  onScaleEnd?: (e: EditorScaleEvent) => void;
   onRotate?: (e: EditorRotateEvent) => void;
+  onRotateEnd?: (e: EditorRotateEvent) => void;
   onSelect?: (e: EditorEvent) => void;
   onTap?: (e: PointerEvent) => void;
   onAppChange?: (app: LeaferApp) => void;
-  onPropertyChange?: (e: PropertyEvent) => void;
   onViewMove?: (e: MoveEvent) => void;
   onViewZoom?: (e: ZoomEvent) => void;
 }
@@ -66,16 +69,33 @@ function App(props: PropsWithChildren<AppProps>) {
     onSelect,
     onAppChange,
     onTap,
-    onPropertyChange,
     onViewZoom,
     onViewMove,
+    onMoveEnd,
+    onRotateEnd,
+    onScaleEnd,
     selectCmpIds = [],
     hittable = true,
     visible = true,
     zoomLayer,
   } = props;
+  const moveStateRef = useRef(null);
+  const scaleStateRef = useRef(null);
+  const preSelectCmpIds = usePrevious(selectCmpIds);
 
   const [leaferApp, isInit] = useLeaferComponent(() => {
+    const handlePointUp = (evt: PointerEvent) => {
+      if (moveStateRef.current) {
+        onMoveEnd?.(moveStateRef.current);
+        moveStateRef.current = null;
+      }
+
+      if (scaleStateRef.current) {
+        onScaleEnd?.(scaleStateRef.current);
+        scaleStateRef.current = null;
+      }
+    };
+
     const app = new LeaferApp({
       view: window,
       fill: 'white',
@@ -90,13 +110,19 @@ function App(props: PropsWithChildren<AppProps>) {
 
     app.editor.on(EditorScaleEvent.SCALE, onScale);
 
+    app.editor.on(EditorScaleEvent.SCALE, (e) => {
+      scaleStateRef.current = e;
+    });
+
     app.editor.on(EditorMoveEvent.MOVE, onMove);
+
+    app.editor.on(EditorMoveEvent.MOVE, (e) => {
+      moveStateRef.current = e;
+    });
 
     app.editor.on(EditorRotateEvent.ROTATE, onRotate);
 
     app.editor.on(EditorEvent.SELECT, onSelect);
-
-    app.editor.on(PropertyEvent.CHANGE, onPropertyChange);
 
     app.tree.on(MoveEvent.MOVE, onViewMove);
 
@@ -105,6 +131,8 @@ function App(props: PropsWithChildren<AppProps>) {
     app.on(PointerEvent.DOWN, onPointDown);
 
     app.on(PointerEvent.UP, onPointUp);
+
+    app.on(PointerEvent.UP, handlePointUp);
 
     app.on(PointerEvent.TAP, onTap);
 
@@ -154,7 +182,19 @@ function App(props: PropsWithChildren<AppProps>) {
 
   useEffect(() => {
     if (!leaferApp) return;
-  }, [selectCmpIds]);
+
+    if (preSelectCmpIds?.length === selectCmpIds.length) {
+      if (preSelectCmpIds?.every((id) => selectCmpIds.includes(id))) {
+        return;
+      }
+    }
+
+    const selectedUI = selectCmpIds
+      .map((id) => leaferApp.tree.findId(id))
+      .filter((o) => !!o);
+
+    leaferApp.editor.select(selectedUI);
+  }, [selectCmpIds, leaferApp]);
 
   return (
     <LeaferAppContext.Provider value={leaferApp}>

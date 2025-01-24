@@ -14,11 +14,13 @@
     "@leafer-in/arrow": "^1.3.3",
     "@leafer-in/editor": "^1.3.2",
     "@leafer-in/export": "^1.3.3",
+    "@leafer-in/find": "^1.3.3",
     "@leafer-in/text-editor": "^1.3.3",
     "@leafer-in/view": "^1.3.3",
     "@leafer-in/viewport": "^1.3.3",
     "@simonwep/pickr": "^1.9.1",
     "antd": "^5.23.2",
+    "fast-deep-equal": "^3.1.3",
     "hotkeys-js": "^3.13.9",
     "leafer-ui": "^1.3.2",
     "lodash-es": "^4.17.21",
@@ -26,6 +28,7 @@
     "react-dom": "^18.3.1",
     "react-use": "^17.6.0",
     "uuid": "^11.0.5",
+    "zundo": "^2.3.0",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

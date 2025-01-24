@@ -1,17 +1,22 @@
 import { PropsWithChildren } from 'react';
-import { Rect, IRectInputData } from 'leafer-ui';
+import { Rect, IRectInputData, PropertyEvent } from 'leafer-ui';
 import useLeaferPropsUpdate from '~/driver/hooks/useLeaferPropsUpdate';
 import useLeaferComponent from '~/driver/hooks/useLeaferComponent';
 
-type RectangleProps = Omit<IRectInputData, 'children'> & {};
+export type RectProps = Omit<IRectInputData, 'children'> & {
+  onChange?: (e: PropertyEvent) => void;
+};
 
-export default function Rectangle(props: PropsWithChildren<RectangleProps>) {
-  const [LeaferRect] = useLeaferComponent(() => {
-    const { children, ...restProps } = props;
-    return new Rect(restProps);
+export default function Rectangle(props: PropsWithChildren<RectProps>) {
+  const [leaferRect] = useLeaferComponent(() => {
+    const { children, onChange, ...restProps } = props;
+    const leaferRect = new Rect(restProps);
+    leaferRect.on(PropertyEvent.CHANGE, onChange);
+
+    return leaferRect;
   });
 
-  useLeaferPropsUpdate<Rect>(LeaferRect, props);
+  useLeaferPropsUpdate<Rect>(leaferRect, props);
 
   return null;
 }

@@ -3,6 +3,7 @@ import useToolbarStore, { ToolBarState } from '~/store/toolbar';
 import Iconfont, { IconType } from '~/components/Iconfont';
 
 import S from './index.module.less';
+import { useRef } from 'react';
 
 interface Icon {
   name: string;
@@ -13,6 +14,7 @@ interface Icon {
 
 export default function Toolbar() {
   const { state, setState } = useToolbarStore();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const icons: Icon[] = [
     {
@@ -71,6 +73,12 @@ export default function Toolbar() {
         setState(ToolBarState.Arrow);
       },
     },
+    {
+      name: 'tupian',
+      size: 20,
+      type: ToolBarState.Image,
+      onClick: () => {},
+    },
   ];
 
   return (
@@ -85,6 +93,7 @@ export default function Toolbar() {
           </div>
         );
       })}
+      <input ref={inputRef} style={{ display: 'none' }} />
     </div>
   );
 }
