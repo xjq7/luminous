@@ -6,6 +6,32 @@ import { IZoomLayer } from '~/driver/app';
 import { Cmp } from '~/interface/cmp';
 import { AnyObj } from '~/utils/types';
 
+export function debounceUpdateCmpsWithMerge(fn: any, wait: number) {
+  let timer: NodeJS.Timeout | null = null;
+  const cmpMaps = new Map<string, Partial<Cmp>>();
+  return (cmps: Partial<Cmp>[]) => {
+    cmps.forEach((cmp) => {
+      cmpMaps.set(cmp.id as string, {
+        ...cmpMaps.get(cmp.id as string),
+        ...cmp,
+      });
+    });
+
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      const mergeCmps: Partial<Cmp>[] = [];
+      cmpMaps.forEach((cmp) => {
+        mergeCmps.push(cmp);
+      });
+      fn(mergeCmps);
+      cmpMaps.clear();
+      timer = null;
+    }, wait);
+  };
+}
+
 export interface ModelStore {
   cmps: Cmp[];
   selectCmpIds: string[];
@@ -16,6 +42,10 @@ export interface ModelStore {
   removeCmpById: (ids: string[]) => void;
   updateSelectCmpIds: (ids: string[]) => void;
   updateZoomLayer: (zoomLayer: IZoomLayer) => void;
+  upwardCmp: (id: string) => void;
+  downwardCmp: (id: string) => void;
+  topCmp: (id: string) => void;
+  bottomCmp: (id: string) => void;
 }
 
 const useModelStore = create<
@@ -45,10 +75,68 @@ const useModelStore = create<
             const index = cmps.findIndex((cmp) => cmp.id === id);
 
             if (index === -1) {
-              return { ...state };
+              return state;
             }
+
+            const isCmpUpdate = Object.keys(cmp).some(
+              (key) =>
+                (cmp as AnyObj)[key] !== (state.cmps[index] as AnyObj)[key]
+            );
+
+            if (!isCmpUpdate) return state;
+
             cmps[index] = { ...cmps[index], ...cmp };
             return { ...state, cmps: cmps.slice() };
+          });
+        },
+        upwardCmp(id: string) {
+          return set((state) => {
+            const cmpIdx = state.cmps.findIndex((cmp) => cmp.id === id);
+            console.log(cmpIdx);
+
+            if (cmpIdx === state.cmps.length - 1) return state;
+            const newCmps = [...state.cmps];
+            const temp = newCmps[cmpIdx];
+            newCmps[cmpIdx] = newCmps[cmpIdx + 1];
+            newCmps[cmpIdx + 1] = temp;
+
+            return { ...state, cmps: newCmps };
+          });
+        },
+        downwardCmp(id: string) {
+          return set((state) => {
+            const cmpIdx = state.cmps.findIndex((cmp) => cmp.id === id);
+            if (cmpIdx === 0) return state;
+            const newCmps = [...state.cmps];
+            const temp = newCmps[cmpIdx];
+            newCmps[cmpIdx] = newCmps[cmpIdx - 1];
+            newCmps[cmpIdx - 1] = temp;
+
+            return { ...state, cmps: newCmps };
+          });
+        },
+        topCmp(id: string) {
+          return set((state) => {
+            const cmpIdx = state.cmps.findIndex((cmp) => cmp.id === id);
+            if (cmpIdx === state.cmps.length - 1) return state;
+            const newCmps = [...state.cmps];
+            const temp = newCmps[cmpIdx];
+            newCmps[cmpIdx] = newCmps[state.cmps.length - 1];
+            newCmps[state.cmps.length - 1] = temp;
+
+            return { ...state, cmps: newCmps };
+          });
+        },
+        bottomCmp(id: string) {
+          return set((state) => {
+            const cmpIdx = state.cmps.findIndex((cmp) => cmp.id === id);
+            if (cmpIdx === 0) return state;
+            const newCmps = [...state.cmps];
+            const temp = newCmps[cmpIdx];
+            newCmps[cmpIdx] = newCmps[0];
+            newCmps[0] = temp;
+
+            return { ...state, cmps: newCmps };
           });
         },
         updateCmps: (cmps: Partial<Cmp>[]) => {
@@ -96,7 +184,6 @@ const useModelStore = create<
       }),
       {
         limit: 50,
-        equality: (pastState, currentState) => shallow(pastState, currentState),
       }
     ),
     {

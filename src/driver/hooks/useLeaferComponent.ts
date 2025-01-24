@@ -1,5 +1,5 @@
 import { UI } from 'leafer-ui';
-import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import useLeaferApp from './useLeaferApp';
 
 export default function useLeaferComponent<T extends UI>(creator: () => T) {
@@ -8,7 +8,7 @@ export default function useLeaferComponent<T extends UI>(creator: () => T) {
   const componentRef = useRef<T>();
   const [isInit, setInit] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     componentRef.current = creatorRef.current();
     setInit(true);
     leaferApp?.tree.add(componentRef.current);

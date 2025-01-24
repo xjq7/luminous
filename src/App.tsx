@@ -12,6 +12,11 @@ function App() {
         token: {
           colorPrimary: primaryColor,
         },
+        components: {
+          Slider: {
+            trackBg: primaryColor,
+          },
+        },
       }}
     >
       <Editor />

@@ -25,6 +25,7 @@ export function generateCmp(
     id: v4(),
     name: '',
     locked: true,
+    opacity: 1,
   };
 
   if ([CmpType.Rect, CmpType.Ellipse].includes(cmpType)) {

@@ -21,7 +21,11 @@ export type IconType =
   | 'jianhao'
   | 'jianhao1'
   | 'fuzhi'
-  | 'tupian';
+  | 'tupian'
+  | 'xiayi'
+  | 'shangyi'
+  | 'zhidi'
+  | 'top';
 
 interface Props
   extends React.DetailedHTMLProps<

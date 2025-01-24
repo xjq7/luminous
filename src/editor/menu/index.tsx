@@ -1,18 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Dropdown, Form, MenuProps, Modal, Switch } from 'antd';
 import Iconfont from '~/components/Iconfont';
 import useCanvasStore from '~/store/canvas';
-import Pickr from '@simonwep/pickr';
-import '@simonwep/pickr/dist/themes/monolith.min.css';
 import { primaryColor } from '~/styles/theme';
+import ColorPicker from '~/components/ColorPicker';
 import S from './index.module.less';
 
 export default function Menu() {
   const app = useCanvasStore((state) => state.app);
   const [exportModelOpen, setExportModelOpen] = useState(false);
   const [form] = Form.useForm();
-  const colorPickerContainerRef = useRef<HTMLDivElement>(null);
-  const pickrRef = useRef<Pickr | null>(null);
   const [image, setImage] = useState('');
   const [backgroundColor, setBackgroundColor] = useState(primaryColor);
   const enabledBackground = Form.useWatch(['background'], form);
@@ -48,59 +45,11 @@ export default function Menu() {
   ];
 
   const handleDownload = (type: 'png' | 'jpg') => {
-    app?.export('luminous.' + type, { pixelRatio: 2, fill: backgroundColor });
+    app?.export('luminous.' + type, {
+      pixelRatio: 2,
+      fill: enabledBackground ? backgroundColor : 'transparent',
+    });
   };
-
-  const handleCreatePikcr = () => {
-    if (!pickrRef.current) {
-      pickrRef.current = Pickr.create({
-        el: colorPickerContainerRef.current as HTMLElement,
-        theme: 'monolith',
-        default: primaryColor,
-        components: {
-          // Main components
-          preview: true,
-          opacity: true,
-          hue: true,
-
-          // Input / output Options
-          interaction: {
-            hex: true,
-            rgba: true,
-            hsla: true,
-            hsva: true,
-            cmyk: true,
-            input: true,
-            clear: true,
-            save: true,
-          },
-        },
-      });
-
-      pickrRef.current.show();
-
-      pickrRef.current.on('save', (pickrInstance: any) => {
-        if (pickrInstance) {
-          setBackgroundColor(pickrInstance.toHEXA()?.toString());
-        }
-      });
-    } else {
-      pickrRef.current.show();
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      pickrRef.current?.hide();
-      pickrRef.current?.destroy();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!exportModelOpen) {
-      pickrRef.current?.hide();
-    }
-  }, [exportModelOpen]);
 
   useEffect(() => {
     let bgColor = backgroundColor;
@@ -109,7 +58,7 @@ export default function Menu() {
       bgColor = 'transparent';
     }
 
-    app?.export('jpg', { fill: bgColor }).then((result) => {
+    app?.export('png', { fill: bgColor }).then((result) => {
       setImage(result.data);
     });
   }, [exportModelOpen, app, backgroundColor, enabledBackground]);
@@ -140,12 +89,10 @@ export default function Menu() {
                 <Switch />
               </Form.Item>
               <Form.Item label="背景颜色">
-                <div
-                  ref={colorPickerContainerRef}
-                  className={S.color}
-                  style={{ backgroundColor: primaryColor }}
-                  onClick={handleCreatePikcr}
-                ></div>
+                <ColorPicker
+                  value={primaryColor}
+                  onChange={(value) => setBackgroundColor(value)}
+                />
               </Form.Item>
             </Form>
 

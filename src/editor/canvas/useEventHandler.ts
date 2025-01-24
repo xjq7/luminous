@@ -9,7 +9,7 @@ import {
   ZoomEvent,
 } from 'leafer-ui';
 import { useShallow } from 'zustand/react/shallow';
-import useModelStore from '~/store/model';
+import useModelStore, { debounceUpdateCmpsWithMerge } from '~/store/model';
 import useToolbarStore, { ToolBarState } from '~/store/toolbar';
 import { Cmp, CmpType } from '~/interface/cmp';
 import { generateCmp } from './generator';
@@ -21,32 +21,6 @@ import {
 } from '@leafer-in/editor';
 import useCanvasStore from '~/store/canvas';
 import debounce from 'lodash-es/debounce';
-
-function debounceUpdateCmpsWithMerge(fn: any, wait: number) {
-  let timer: NodeJS.Timeout | null = null;
-  const cmpMaps = new Map<string, Partial<Cmp>>();
-  return (cmps: Partial<Cmp>[]) => {
-    cmps.forEach((cmp) => {
-      cmpMaps.set(cmp.id as string, {
-        ...cmpMaps.get(cmp.id as string),
-        ...cmp,
-      });
-    });
-
-    if (timer) {
-      clearTimeout(timer);
-    }
-    timer = setTimeout(() => {
-      const mergeCmps: Partial<Cmp>[] = [];
-      cmpMaps.forEach((cmp) => {
-        mergeCmps.push(cmp);
-      });
-      fn(mergeCmps);
-      cmpMaps.clear();
-      timer = null;
-    }, wait);
-  };
-}
 
 export default function useEventHandler() {
   const pointDownRef = useRef<IPointData>();

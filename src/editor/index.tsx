@@ -12,6 +12,7 @@ export default function Editor() {
       <Settings />
       <Toolbar />
       <Menu />
+      <Settings />
       <Zoom />
       <UndoRedo />
     </>
