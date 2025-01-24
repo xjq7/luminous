@@ -18,7 +18,7 @@ function RenderCmps() {
   const { cmps } = useModelStore();
 
   return cmps.map((cmp) => {
-    return <CmpRender key={cmp.id} {...cmp}></CmpRender>;
+    return <CmpRender {...cmp}></CmpRender>;
   });
 }
 

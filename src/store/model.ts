@@ -84,15 +84,14 @@ const useModelStore = create<
             );
 
             if (!isCmpUpdate) return state;
-
-            cmps[index] = { ...cmps[index], ...cmp };
-            return { ...state, cmps: cmps.slice() };
+            const newCmps = [...cmps];
+            newCmps[index] = { ...cmps[index], ...cmp };
+            return { ...state, cmps: newCmps };
           });
         },
         upwardCmp(id: string) {
           return set((state) => {
             const cmpIdx = state.cmps.findIndex((cmp) => cmp.id === id);
-            console.log(cmpIdx);
 
             if (cmpIdx === state.cmps.length - 1) return state;
             const newCmps = [...state.cmps];
