@@ -11,7 +11,7 @@ import {
 import { useShallow } from 'zustand/react/shallow';
 import useModelStore, { debounceUpdateCmpsWithMerge } from '~/store/model';
 import useToolbarStore, { ToolBarState } from '~/store/toolbar';
-import { Cmp, CmpType } from '~/interface/cmp';
+import { CmpType } from '~/interface/cmp';
 import { generateCmp } from './generator';
 import {
   EditorEvent,

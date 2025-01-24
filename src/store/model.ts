@@ -184,6 +184,7 @@ const useModelStore = create<
       }),
       {
         limit: 50,
+        equality: (pastState, currentState) => shallow(pastState, currentState),
       }
     ),
     {
