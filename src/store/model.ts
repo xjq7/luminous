@@ -5,6 +5,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { IZoomLayer } from '~/driver/app';
 import { Cmp } from '~/interface/cmp';
 import { AnyObj } from '~/utils/types';
+import { swap } from '~/utils/utils';
 
 export function debounceUpdateCmpsWithMerge(fn: any, wait: number) {
   let timer: NodeJS.Timeout | null = null;
@@ -95,9 +96,7 @@ const useModelStore = create<
 
             if (cmpIdx === state.cmps.length - 1) return state;
             const newCmps = [...state.cmps];
-            const temp = newCmps[cmpIdx];
-            newCmps[cmpIdx] = newCmps[cmpIdx + 1];
-            newCmps[cmpIdx + 1] = temp;
+            swap(newCmps, cmpIdx, cmpIdx + 1);
 
             return { ...state, cmps: newCmps };
           });
@@ -107,9 +106,7 @@ const useModelStore = create<
             const cmpIdx = state.cmps.findIndex((cmp) => cmp.id === id);
             if (cmpIdx === 0) return state;
             const newCmps = [...state.cmps];
-            const temp = newCmps[cmpIdx];
-            newCmps[cmpIdx] = newCmps[cmpIdx - 1];
-            newCmps[cmpIdx - 1] = temp;
+            swap(newCmps, cmpIdx, cmpIdx - 1);
 
             return { ...state, cmps: newCmps };
           });
@@ -119,9 +116,7 @@ const useModelStore = create<
             const cmpIdx = state.cmps.findIndex((cmp) => cmp.id === id);
             if (cmpIdx === state.cmps.length - 1) return state;
             const newCmps = [...state.cmps];
-            const temp = newCmps[cmpIdx];
-            newCmps[cmpIdx] = newCmps[state.cmps.length - 1];
-            newCmps[state.cmps.length - 1] = temp;
+            swap(newCmps, cmpIdx, state.cmps.length - 1);
 
             return { ...state, cmps: newCmps };
           });
@@ -131,9 +126,7 @@ const useModelStore = create<
             const cmpIdx = state.cmps.findIndex((cmp) => cmp.id === id);
             if (cmpIdx === 0) return state;
             const newCmps = [...state.cmps];
-            const temp = newCmps[cmpIdx];
-            newCmps[cmpIdx] = newCmps[0];
-            newCmps[0] = temp;
+            swap(newCmps, cmpIdx, 0);
 
             return { ...state, cmps: newCmps };
           });
