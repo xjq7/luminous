@@ -1,6 +1,7 @@
 import { create, StoreApi, useStore } from 'zustand';
 import { temporal, TemporalState } from 'zundo';
 import { shallow } from 'zustand/shallow';
+import { v4 } from 'uuid';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { IZoomLayer } from '~/driver/app';
 import { Cmp } from '~/interface/cmp';
@@ -38,6 +39,7 @@ export interface ModelStore {
   selectCmpIds: string[];
   zoomLayer: IZoomLayer;
   addCmp: (cmp: Cmp) => void;
+  copyCmpById: (id: string) => void;
   updateCmpById: (id: string, cmp: Partial<Cmp>) => void;
   updateCmps: (cmp: Partial<Cmp>[]) => void;
   removeCmpById: (ids: string[]) => void;
@@ -70,6 +72,24 @@ const useModelStore = create<
             cmps = cmps.filter((cmp) => !ids.includes(cmp.id));
             return { ...state, selectCmpIds: [], cmps };
           }),
+        copyCmpById: (id: string) => {
+          return set((state) => {
+            const cmp = state.cmps.find((cmp) => cmp.id === id);
+            if (cmp) {
+              const newCmps = [...state.cmps];
+              newCmps.push({
+                ...cmp,
+                id: v4(),
+                name: '',
+                x: (cmp.x || 0) + 20,
+                y: (cmp.y || 0) + 20,
+              });
+
+              return { ...state, cmps: newCmps };
+            }
+            return state;
+          });
+        },
         updateCmpById: (id: string, cmp: Partial<Cmp>) => {
           return set((state) => {
             const { cmps } = state;

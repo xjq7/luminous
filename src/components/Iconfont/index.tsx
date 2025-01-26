@@ -25,7 +25,8 @@ export type IconType =
   | 'xiayi'
   | 'shangyi'
   | 'zhidi'
-  | 'top';
+  | 'top'
+  | 'shanchu';
 
 interface Props
   extends React.DetailedHTMLProps<
