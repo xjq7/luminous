@@ -7,6 +7,8 @@ import {
   Image,
   RectProps,
   EllipseProps,
+  PathProps,
+  Path,
 } from '~/driver';
 import { Cmp, CmpType } from '~/interface/cmp';
 
@@ -41,14 +43,19 @@ export function ImageRender(props: EllipseProps) {
   return <Image {...props}></Image>;
 }
 
+export function PathRender(props: PathProps) {
+  return <Path {...props}></Path>;
+}
+
 const CmpRenderMap: Record<CmpType, (cmp: Partial<Cmp>) => React.ReactElement> =
   {
     [CmpType.Rect]: RectRender,
     [CmpType.Text]: TextRender,
     [CmpType.Ellipse]: EllipseRender,
-    [CmpType.Line]: LineRender,
+    [CmpType.Line]: PathRender,
     [CmpType.Arrow]: ArrowRender,
     [CmpType.Image]: ImageRender,
+    [CmpType.Path]: PathRender,
   };
 
 export { CmpRenderMap };

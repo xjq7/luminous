@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
-import { Form, Slider } from 'antd';
+import { Form, InputNumber, Slider } from 'antd';
 import { useShallow } from 'zustand/shallow';
 import useModelStore from '~/store/model';
 import Iconfont from '~/components/Iconfont';
 import ColorPicker from '~/components/ColorPicker';
 import { AnyObj } from '~/utils/types';
+import useCanvasStore from '~/store/canvas';
+
 import S from './index.module.less';
 
 export default function Settings() {
@@ -33,7 +35,7 @@ export default function Settings() {
     }))
   );
 
-  const show = useMemo(() => selectCmpIds.length === 1, [selectCmpIds]);
+  const showSetting = useCanvasStore((state) => state.showSetting);
 
   const selectCmpId = useMemo(() => {
     if (selectCmpIds.length !== 1) return null;
@@ -58,12 +60,12 @@ export default function Settings() {
 
   if (!selectCmp || !selectCmpId) return null;
 
-  const { opacity = 1, fill = '', stroke = '' } = selectCmp;
+  const { opacity = 1, fill = '', stroke = '', strokeWidth = 0 } = selectCmp;
 
   return (
     <div
       className={S.settings}
-      style={{ display: show ? 'block' : 'none' }}
+      style={{ display: showSetting ? 'block' : 'none' }}
       key={selectCmpId}
     >
       <Form layout="vertical">
@@ -80,6 +82,14 @@ export default function Settings() {
             value={stroke as string}
             onChange={(value: string) => {
               handleSettingsChange({ stroke: value });
+            }}
+          />
+        </Form.Item>
+        <Form.Item label="描边宽度">
+          <InputNumber
+            value={strokeWidth}
+            onChange={(value: number | null) => {
+              handleSettingsChange({ strokeWidth: value || 0 });
             }}
           />
         </Form.Item>

@@ -197,6 +197,10 @@ const useModelStore = create<
       {
         limit: 50,
         equality: (pastState, currentState) => shallow(pastState, currentState),
+        partialize: (state) => {
+          const { zoomLayer, ...rest } = state;
+          return { ...rest } as ModelStore;
+        },
       }
     ),
     {

@@ -11,7 +11,7 @@ import {
 import { useShallow } from 'zustand/react/shallow';
 import useModelStore, { debounceUpdateCmpsWithMerge } from '~/store/model';
 import useToolbarStore, { ToolBarState } from '~/store/toolbar';
-import { CmpType } from '~/interface/cmp';
+import { CmpType, PathCmp } from '~/interface/cmp';
 import { generateCmp } from './generator';
 import {
   EditorEvent,
@@ -21,11 +21,16 @@ import {
 } from '@leafer-in/editor';
 import useCanvasStore from '~/store/canvas';
 import debounce from 'lodash-es/debounce';
+import { PathEditorEvent } from 'leafer-x-path-editor';
 
 export default function useEventHandler() {
   const pointDownRef = useRef<IPointData>();
-  const { app, setGenCmp } = useCanvasStore(
-    useShallow((state) => ({ app: state.app, setGenCmp: state.setGenCmp }))
+  const { app, setGenCmp, setShowSetting } = useCanvasStore(
+    useShallow((state) => ({
+      app: state.app,
+      setGenCmp: state.setGenCmp,
+      setShowSetting: state.setShowSetting,
+    }))
   );
   const appRef = useRef(app);
 
@@ -33,15 +38,21 @@ export default function useEventHandler() {
     appRef.current = app;
   }, [app]);
 
-  const { addCmp, updateZoomLayer, updateSelectCmpIds, updateCmps } =
-    useModelStore(
-      useShallow((state) => ({
-        addCmp: state.addCmp,
-        updateZoomLayer: state.updateZoomLayer,
-        updateSelectCmpIds: state.updateSelectCmpIds,
-        updateCmps: state.updateCmps,
-      }))
-    );
+  const {
+    addCmp,
+    updateZoomLayer,
+    updateSelectCmpIds,
+    updateCmps,
+    updateCmpById,
+  } = useModelStore(
+    useShallow((state) => ({
+      addCmp: state.addCmp,
+      updateZoomLayer: state.updateZoomLayer,
+      updateSelectCmpIds: state.updateSelectCmpIds,
+      updateCmps: state.updateCmps,
+      updateCmpById: state.updateCmpById,
+    }))
+  );
 
   const debounceUpdateCmps = debounceUpdateCmpsWithMerge(updateCmps, 100);
 
@@ -118,7 +129,7 @@ export default function useEventHandler() {
 
     const genCmp = useCanvasStore.getState().genCmp;
     if (genCmp) {
-      addCmp({ ...genCmp, locked: false });
+      addCmp({ ...genCmp });
       setGenCmp(null);
       setState(ToolBarState.Select);
     }
@@ -202,6 +213,26 @@ export default function useEventHandler() {
     debounceUpdateCmps(cmps);
   };
 
+  const onPathChange = (evt: PathEditorEvent) => {
+    const { value } = evt;
+
+    if (value) {
+      const { visible, path, id } = value;
+      if (visible && id) {
+        updateCmpById(id, { path } as PathCmp);
+      }
+    }
+  };
+
+  const onTap = (evt: PointerEvent) => {
+    if (appRef.current === evt.target) {
+      setShowSetting(false);
+      return;
+    }
+
+    setShowSetting(true);
+  };
+
   return {
     onPointDown,
     onPointMove,
@@ -210,6 +241,8 @@ export default function useEventHandler() {
     onMoveEnd,
     onScaleEnd,
     onRotateEnd,
+    onPathChange,
+    onTap,
     onViewMove,
     onViewZoom,
   };

@@ -4,7 +4,7 @@ import {
   Cmp,
   CmpType,
   ImageCmp,
-  LineCmp,
+  PathCmp,
   TextCmp,
 } from '~/interface/cmp';
 import { primaryColor } from '../material/theme';
@@ -24,7 +24,7 @@ export function generateCmp(
     type: cmpType,
     id: v4(),
     name: '',
-    locked: true,
+    locked: false,
     opacity: 1,
   };
 
@@ -55,10 +55,10 @@ export function generateCmp(
   } else if (cmpType === CmpType.Line) {
     return {
       ...baseModel,
-      points: [startX, startY, endX, endY],
+      path: `M${startX} ${startY} L${endX} ${endY}`,
       stroke: primaryColor,
       strokeWidth: 2,
-    } as LineCmp;
+    } as PathCmp;
   } else if (cmpType === CmpType.Text) {
     return {
       ...baseModel,

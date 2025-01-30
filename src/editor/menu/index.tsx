@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Button, Dropdown, Form, MenuProps, Modal, Switch } from 'antd';
+import {
+  Button,
+  Dropdown,
+  Form,
+  MenuProps,
+  Modal,
+  Segmented,
+  Switch,
+} from 'antd';
 import Iconfont from '~/components/Iconfont';
 import useCanvasStore from '~/store/canvas';
 import { primaryColor } from '~/styles/theme';
@@ -45,8 +53,10 @@ export default function Menu() {
   ];
 
   const handleDownload = (type: 'png' | 'jpg') => {
+    const { pixelRatio } = form.getFieldsValue();
+
     app?.export('luminous.' + type, {
-      pixelRatio: 2,
+      pixelRatio,
       fill: enabledBackground ? backgroundColor : 'transparent',
     });
   };
@@ -77,14 +87,19 @@ export default function Menu() {
         onCancel={() => setExportModelOpen(false)}
         footer={null}
         maskClosable={true}
-        width={620}
+        width={660}
       >
         <div className={S.content}>
           <div className={S.preview}>
             <img className={S.image} src={image} />
           </div>
           <div className={S.config}>
-            <Form size="large" className={S.form} form={form}>
+            <Form
+              size="large"
+              className={S.form}
+              form={form}
+              initialValues={{ pixelRatio: 1 }}
+            >
               <Form.Item label="背景" name="background">
                 <Switch />
               </Form.Item>
@@ -92,6 +107,22 @@ export default function Menu() {
                 <ColorPicker
                   value={primaryColor}
                   onChange={(value) => setBackgroundColor(value)}
+                />
+              </Form.Item>
+              <Form.Item label="像素比(清晰度)" name="pixelRatio">
+                <Segmented
+                  options={[
+                    { label: '1x', value: 1 },
+                    {
+                      label: '2x',
+                      value: 2,
+                    },
+                    {
+                      label: '3x',
+                      value: 3,
+                    },
+                  ]}
+                  name="group"
                 />
               </Form.Item>
             </Form>

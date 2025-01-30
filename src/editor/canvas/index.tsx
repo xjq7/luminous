@@ -1,3 +1,4 @@
+import { useShallow } from 'zustand/react/shallow';
 import { App } from '~/driver';
 import useModelStore from '~/store/model';
 import { CmpRender } from './render';
@@ -5,7 +6,6 @@ import useToolbarStore, { ToolBarState } from '~/store/toolbar';
 import useEventHandler from './useEventHandler';
 import useCanvasStore from '~/store/canvas';
 import useHotkeys from './useHotkeys';
-import { useShallow } from 'zustand/react/shallow';
 
 function RenderGenCmp() {
   const genCmp = useCanvasStore((state) => state.genCmp);
@@ -40,6 +40,8 @@ export default function Canvas() {
     onMoveEnd,
     onScaleEnd,
     onRotateEnd,
+    onPathChange,
+    onTap,
   } = useEventHandler();
 
   const state = useToolbarStore((state) => state.state);
@@ -60,8 +62,10 @@ export default function Canvas() {
       onMoveEnd={onMoveEnd}
       onScaleEnd={onScaleEnd}
       onRotateEnd={onRotateEnd}
+      onPathChange={onPathChange}
       onViewMove={onViewMove}
       onViewZoom={onViewZoom}
+      onTap={onTap}
       onAppChange={(app) => {
         setApp(app);
       }}

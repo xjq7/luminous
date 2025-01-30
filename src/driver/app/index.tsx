@@ -21,6 +21,7 @@ import '@leafer-in/export';
 import '@leafer-in/text-editor';
 import '@leafer-in/view';
 import '@leafer-in/find';
+import { PathEditorEvent } from 'leafer-x-path-editor';
 
 export interface IZoomLayer {
   x?: number;
@@ -48,6 +49,7 @@ export interface AppProps {
   onAppChange?: (app: LeaferApp) => void;
   onViewMove?: (e: MoveEvent) => void;
   onViewZoom?: (e: ZoomEvent) => void;
+  onPathChange?: (e: PathEditorEvent) => void;
 }
 
 export interface AppRef {
@@ -74,6 +76,7 @@ function App(props: PropsWithChildren<AppProps>) {
     onMoveEnd,
     onRotateEnd,
     onScaleEnd,
+    onPathChange,
     selectCmpIds = [],
     hittable = true,
     visible = true,
@@ -132,6 +135,8 @@ function App(props: PropsWithChildren<AppProps>) {
     app.editor.on(EditorRotateEvent.ROTATE, onRotate);
 
     app.editor.on(EditorEvent.SELECT, onSelect);
+
+    app.editor.on(PathEditorEvent.CHANGE, onPathChange);
 
     app.tree.on(MoveEvent.MOVE, onViewMove);
 

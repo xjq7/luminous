@@ -85,6 +85,10 @@ export interface ImageCmp extends Cmp {
   url: string;
 }
 
+export interface PathCmp extends Cmp {
+  path?: string;
+}
+
 export enum CmpType {
   Text,
   Rect,
@@ -92,4 +96,5 @@ export enum CmpType {
   Line,
   Arrow,
   Image,
+  Path,
 }
