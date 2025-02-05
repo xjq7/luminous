@@ -56,6 +56,7 @@ const CmpRenderMap: Record<CmpType, (cmp: Partial<Cmp>) => React.ReactElement> =
     [CmpType.Arrow]: ArrowRender,
     [CmpType.Image]: ImageRender,
     [CmpType.Path]: PathRender,
+    [CmpType.Pen]: PathRender,
   };
 
 export { CmpRenderMap };

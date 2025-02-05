@@ -11,7 +11,7 @@ import {
 import { useShallow } from 'zustand/react/shallow';
 import useModelStore, { debounceUpdateCmpsWithMerge } from '~/store/model';
 import useToolbarStore, { ToolBarState } from '~/store/toolbar';
-import { CmpType, PathCmp } from '~/interface/cmp';
+import { Cmp, CmpType, PathCmp } from '~/interface/cmp';
 import { generateCmp } from './generator';
 import {
   EditorEvent,
@@ -32,7 +32,10 @@ export default function useEventHandler() {
       setShowSetting: state.setShowSetting,
     }))
   );
+
   const appRef = useRef(app);
+
+  const pointPositions = useRef<number[]>([]);
 
   useEffect(() => {
     appRef.current = app;
@@ -75,6 +78,10 @@ export default function useEventHandler() {
       return;
     }
 
+    if (toolbarState === ToolBarState.Pen) {
+      pointPositions.current.push(1, point.x, point.y);
+    }
+
     pointDownRef.current = point;
 
     if (appRef.current?.editor.selector) {
@@ -112,17 +119,36 @@ export default function useEventHandler() {
       case ToolBarState.Arrow:
         cmpType = CmpType.Arrow;
         break;
+      case ToolBarState.Image:
+        cmpType = CmpType.Image;
+        break;
+      case ToolBarState.Pen:
+        cmpType = CmpType.Pen;
+        break;
       default:
     }
 
-    setGenCmp(
-      generateCmp(cmpType, {
-        startX,
-        startY,
-        endX: x,
-        endY: y,
-      })
-    );
+    if (cmpType === CmpType.Pen) {
+      pointPositions.current.push(2, x, y);
+      setGenCmp({
+        ...generateCmp(cmpType, {
+          startX,
+          startY,
+          endX: x,
+          endY: y,
+        }),
+        path: [...pointPositions.current],
+      } as Cmp);
+    } else {
+      setGenCmp(
+        generateCmp(cmpType, {
+          startX,
+          startY,
+          endX: x,
+          endY: y,
+        })
+      );
+    }
   };
   const onPointUp = () => {
     pointDownRef.current = undefined;
@@ -131,6 +157,7 @@ export default function useEventHandler() {
     if (genCmp) {
       addCmp({ ...genCmp });
       setGenCmp(null);
+
       setState(ToolBarState.Select);
     }
 

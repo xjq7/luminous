@@ -2,6 +2,7 @@ import {
   IArrowType,
   IBlendMode,
   IPaint,
+  IPathCommandData,
   IPointData,
   IShadowEffect,
 } from 'leafer-ui';
@@ -89,6 +90,10 @@ export interface PathCmp extends Cmp {
   path?: string;
 }
 
+export interface PenCmp extends Cmp {
+  path?: string | IPathCommandData[];
+}
+
 export enum CmpType {
   Text,
   Rect,
@@ -97,4 +102,5 @@ export enum CmpType {
   Arrow,
   Image,
   Path,
+  Pen,
 }

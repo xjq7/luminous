@@ -5,6 +5,7 @@ import {
   CmpType,
   ImageCmp,
   PathCmp,
+  PenCmp,
   TextCmp,
 } from '~/interface/cmp';
 import { primaryColor } from '../material/theme';
@@ -78,8 +79,13 @@ export function generateCmp(
   } else if (cmpType === CmpType.Image) {
     return {
       ...baseModel,
-      url: '',
+      x: startX,
+      y: startY,
+      width: endX - startX,
+      height: endY - startY,
     } as ImageCmp;
+  } else if (cmpType === CmpType.Pen) {
+    return { ...baseModel, stroke: primaryColor, strokeWidth: 3 } as PenCmp;
   }
 
   return null;
