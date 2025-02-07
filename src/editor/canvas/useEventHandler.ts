@@ -153,6 +153,8 @@ export default function useEventHandler() {
   const onPointUp = () => {
     pointDownRef.current = undefined;
 
+    pointPositions.current = [];
+
     const genCmp = useCanvasStore.getState().genCmp;
     if (genCmp) {
       addCmp({ ...genCmp });
