@@ -35,23 +35,16 @@ export default function useHotkeys() {
 
     hotkeys(pasteKey, async () => {
       try {
-        // First try to read clipboard data with the Clipboard API
         const clipboardItems = await navigator.clipboard.read();
         let hasImagePasted = false;
-        const { width, height } = app?.bound;
 
         for (const item of clipboardItems) {
-          // Check if the clipboard has image data
-          if (item.types.some((type) => type.startsWith('image/'))) {
-            // Get the image type that's available
-            const imageType = item.types.find((type) =>
-              type.startsWith('image/')
-            );
+          if (item.types.some(type => type.startsWith('image/'))) {
+            const imageType = item.types.find(type => type.startsWith('image/'));
             if (imageType) {
               const blob = await item.getType(imageType);
               const url = URL.createObjectURL(blob);
 
-              // Create image element to get dimensions
               const img = new Image();
               img.src = url;
 
@@ -59,77 +52,69 @@ export default function useHotkeys() {
                 img.onload = resolve;
               });
 
-              // Calculate centered position
-              const imgX = width / 2 - img.width / 2;
-              const imgY = height / 2 - img.height / 2;
-
-              // Create and add the image component to the canvas
               const imageCmp: ImageCmp = {
                 id: genID(),
                 name: 'Pasted Image',
                 type: CmpType.Image,
                 url,
-                x: imgX,
-                y: imgY,
                 width: img.width,
                 height: img.height,
               };
+
+              const canvasWidth = app?.width || 400;
+              const canvasHeight = app?.height || 400;
+              imageCmp.x = (canvasWidth - imageCmp.width) / 2;
+              imageCmp.y = (canvasHeight - imageCmp.height) / 2;
 
               addCmp(imageCmp);
               hasImagePasted = true;
               break;
             }
-          }
-          // Check if clipboard has text data and no image was pasted
-          else if (item.types.includes('text/plain') && !hasImagePasted) {
+          } else if (item.types.includes('text/plain') && !hasImagePasted) {
             const textBlob = await item.getType('text/plain');
             const text = await textBlob.text();
 
-            // Calculate centered position
-            const textX = width / 2 - 150;
-            const textY = height / 2 - 50;
-
-            // Create text component with reasonable defaults
             const textCmp: TextCmp = {
               id: genID(),
               name: 'Pasted Text',
               type: CmpType.Text,
               text: text,
-              x: textX,
-              y: textY,
               width: 300,
               height: 100,
               fontSize: 16,
               fontFamily: 'Arial',
               autoHeight: true,
             };
+
+            const canvasWidth = app?.width || 400;
+            const canvasHeight = app?.height || 400;
+            textCmp.x = (canvasWidth - textCmp.width) / 2;
+            textCmp.y = (canvasHeight - textCmp.height) / 2;
 
             addCmp(textCmp);
             break;
           }
         }
 
-        // If no image or text from clipboard items, try readText as fallback
         if (!hasImagePasted && clipboardItems.length === 0) {
           const text = await navigator.clipboard.readText();
           if (text) {
-            // Calculate centered position
-            const textX = width / 2 - 150;
-            const textY = height / 2 - 50;
-
             const textCmp: TextCmp = {
               id: genID(),
               name: 'Pasted Text',
               type: CmpType.Text,
               text: text,
-              x: textX,
-              y: textY,
               width: 300,
               height: 100,
               fontSize: 16,
               fontFamily: 'Arial',
               autoHeight: true,
             };
+
+            const canvasWidth = app?.width || 400;
+            const canvasHeight = app?.height || 400;
+            textCmp.x = (canvasWidth - textCmp.width) / 2;
+            textCmp.y = (canvasHeight - textCmp.height) / 2;
 
             addCmp(textCmp);
           }
@@ -137,27 +122,25 @@ export default function useHotkeys() {
       } catch (error) {
         console.error('Failed to read clipboard contents:', error);
 
-        // Try text-only clipboard as a fallback
         try {
           const text = await navigator.clipboard.readText();
           if (text) {
-            const { width, height } = app.bound;
-            const textX = width / 2 - 150;
-            const textY = height / 2 - 50;
-
             const textCmp: TextCmp = {
               id: genID(),
               name: 'Pasted Text',
               type: CmpType.Text,
               text: text,
-              x: textX,
-              y: textY,
               width: 300,
               height: 100,
               fontSize: 16,
               fontFamily: 'Arial',
               autoHeight: true,
             };
+
+            const canvasWidth = app?.width || 400;
+            const canvasHeight = app?.height || 400;
+            textCmp.x = (canvasWidth - textCmp.width) / 2;
+            textCmp.y = (canvasHeight - textCmp.height) / 2;
 
             addCmp(textCmp);
           }
