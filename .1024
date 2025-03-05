@@ -1,0 +1,4 @@
+# Command to run when "Run" button clicked
+run_command: pnpm dev
+# Command to install or update dependencies, will execute each time a new thread created to ensure dependencies up-to-date
+dependency_command: pnpm install

@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Clacky-related configuration files
+.1024*
+!.1024
+.breakpoints
+
+# Package manager directories
+.pnpm-store
