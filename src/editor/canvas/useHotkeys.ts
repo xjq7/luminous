@@ -33,9 +33,13 @@ export default function useHotkeys() {
       }
     });
 
-    hotkeys(pasteKey, async () => {
+    const handlePaste = async () => {
       try {
         const clipboardItems = await navigator.clipboard.read();
+        const canvasWidth = app.width;
+        const canvasHeight = app.height;
+        const centerX = canvasWidth / 2;
+        const centerY = canvasHeight / 2;
         let hasImagePasted = false;
 
         for (const item of clipboardItems) {
@@ -47,108 +51,64 @@ export default function useHotkeys() {
 
               const img = new Image();
               img.src = url;
+              await new Promise(resolve => img.onload = resolve);
 
-              await new Promise((resolve) => {
-                img.onload = resolve;
+              const positionElement = (width: number, height: number) => ({
+                x: Math.max(0, centerX - width / 2),
+                y: Math.max(0, centerY - height / 2)
               });
 
+              const { x, y } = positionElement(img.width, img.height);
               const imageCmp: ImageCmp = {
                 id: genID(),
                 name: 'Pasted Image',
                 type: CmpType.Image,
                 url,
+                x,
+                y,
                 width: img.width,
                 height: img.height,
               };
-
-              const canvasWidth = app?.width || 400;
-              const canvasHeight = app?.height || 400;
-              imageCmp.x = (canvasWidth - imageCmp.width) / 2;
-              imageCmp.y = (canvasHeight - imageCmp.height) / 2;
 
               addCmp(imageCmp);
               hasImagePasted = true;
               break;
             }
-          } else if (item.types.includes('text/plain') && !hasImagePasted) {
-            const textBlob = await item.getType('text/plain');
-            const text = await textBlob.text();
-
-            const textCmp: TextCmp = {
-              id: genID(),
-              name: 'Pasted Text',
-              type: CmpType.Text,
-              text: text,
-              width: 300,
-              height: 100,
-              fontSize: 16,
-              fontFamily: 'Arial',
-              autoHeight: true,
-            };
-
-            const canvasWidth = app?.width || 400;
-            const canvasHeight = app?.height || 400;
-            textCmp.x = (canvasWidth - textCmp.width) / 2;
-            textCmp.y = (canvasHeight - textCmp.height) / 2;
-
-            addCmp(textCmp);
-            break;
           }
         }
 
-        if (!hasImagePasted && clipboardItems.length === 0) {
+        if (!hasImagePasted) {
           const text = await navigator.clipboard.readText();
           if (text) {
+            const positionElement = (width: number, height: number) => ({
+              x: Math.max(0, centerX - width / 2),
+              y: Math.max(0, centerY - height / 2)
+            });
+
+            const { x, y } = positionElement(300, 100);
             const textCmp: TextCmp = {
               id: genID(),
               name: 'Pasted Text',
               type: CmpType.Text,
               text: text,
+              x,
+              y,
               width: 300,
               height: 100,
               fontSize: 16,
               fontFamily: 'Arial',
               autoHeight: true,
             };
-
-            const canvasWidth = app?.width || 400;
-            const canvasHeight = app?.height || 400;
-            textCmp.x = (canvasWidth - textCmp.width) / 2;
-            textCmp.y = (canvasHeight - textCmp.height) / 2;
 
             addCmp(textCmp);
           }
         }
       } catch (error) {
-        console.error('Failed to read clipboard contents:', error);
-
-        try {
-          const text = await navigator.clipboard.readText();
-          if (text) {
-            const textCmp: TextCmp = {
-              id: genID(),
-              name: 'Pasted Text',
-              type: CmpType.Text,
-              text: text,
-              width: 300,
-              height: 100,
-              fontSize: 16,
-              fontFamily: 'Arial',
-              autoHeight: true,
-            };
-
-            const canvasWidth = app?.width || 400;
-            const canvasHeight = app?.height || 400;
-            textCmp.x = (canvasWidth - textCmp.width) / 2;
-            textCmp.y = (canvasHeight - textCmp.height) / 2;
-
-            addCmp(textCmp);
-          }
-        } catch (textError) {
-          console.error('Failed to read clipboard text:', textError);
-        }
+        console.error('Failed to paste content:', error);
       }
-    });
+    };
+
+    hotkeys(pasteKey, handlePaste);
 
     return () => {
       hotkeys.unbind(delKey);
