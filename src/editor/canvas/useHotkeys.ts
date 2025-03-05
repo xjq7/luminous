@@ -38,7 +38,8 @@ export default function useHotkeys() {
         // First try to read clipboard data with the Clipboard API
         const clipboardItems = await navigator.clipboard.read();
         let hasImagePasted = false;
-        
+        const { width, height } = app.bound;
+
         for (const item of clipboardItems) {
           // Check if the clipboard has image data
           if (item.types.some(type => type.startsWith('image/'))) {
@@ -56,14 +57,18 @@ export default function useHotkeys() {
                 img.onload = resolve;
               });
               
+              // Calculate centered position
+              const imgX = (width / 2) - (img.width / 2);
+              const imgY = (height / 2) - (img.height / 2);
+              
               // Create and add the image component to the canvas
               const imageCmp: ImageCmp = {
                 id: genID(),
                 name: 'Pasted Image',
                 type: CmpType.Image,
                 url,
-                x: 100,
-                y: 100,
+                x: imgX,
+                y: imgY,
                 width: img.width,
                 height: img.height,
               };
@@ -78,14 +83,18 @@ export default function useHotkeys() {
             const textBlob = await item.getType('text/plain');
             const text = await textBlob.text();
             
+            // Calculate centered position
+            const textX = (width / 2) - 150;
+            const textY = (height / 2) - 50;
+            
             // Create text component with reasonable defaults
             const textCmp: TextCmp = {
               id: genID(),
               name: 'Pasted Text',
               type: CmpType.Text,
               text: text,
-              x: 100,
-              y: 100,
+              x: textX,
+              y: textY,
               width: 300,
               height: 100,
               fontSize: 16,
@@ -102,13 +111,17 @@ export default function useHotkeys() {
         if (!hasImagePasted && clipboardItems.length === 0) {
           const text = await navigator.clipboard.readText();
           if (text) {
+            // Calculate centered position
+            const textX = (width / 2) - 150;
+            const textY = (height / 2) - 50;
+            
             const textCmp: TextCmp = {
               id: genID(),
               name: 'Pasted Text',
               type: CmpType.Text,
               text: text,
-              x: 100,
-              y: 100,
+              x: textX,
+              y: textY,
               width: 300,
               height: 100,
               fontSize: 16,
@@ -126,13 +139,17 @@ export default function useHotkeys() {
         try {
           const text = await navigator.clipboard.readText();
           if (text) {
+            const { width, height } = app.bound;
+            const textX = (width / 2) - 150;
+            const textY = (height / 2) - 50;
+            
             const textCmp: TextCmp = {
               id: genID(),
               name: 'Pasted Text',
               type: CmpType.Text,
               text: text,
-              x: 100,
-              y: 100,
+              x: textX,
+              y: textY,
               width: 300,
               height: 100,
               fontSize: 16,
